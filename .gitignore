@@ -1,0 +1,29 @@
+# Build artifacts
+build/
+install/
+
+# Generated files
+install_manifest.txt
+log/
+ros2_ws.log
+
+# IDE files
+.vscode/
+.idea/
+
+# Generated documentation
+doc/
+
+# Miscellaneous
+*.pyc
+*.pyo
+*.swp
+*~
+
+Debug/
+.metadata/
+.settings/
+
+.VSCodeCounter/
+
+libusb/

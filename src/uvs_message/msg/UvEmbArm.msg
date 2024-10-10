@@ -1,0 +1,2 @@
+uint16 arm_base
+uint16 arm_arm
