@@ -113,7 +113,13 @@ void UvEmbMaster::start()
 void UvEmbMaster::spin_some()
 {
     uvs_message::msg::UvEmbStatus msg;
-    ///@todo: read status from device
+    
+    std::vector<uint8_t> data(64);
+    if(qUvRx.get(data, std::chrono::milliseconds(0)))
+    {
+        ///@todo: read status from device
+    }
+    
     pubStatus->publish(msg);
 }
 
