@@ -76,13 +76,13 @@ UvEmbMaster::UvEmbMaster()
     drv = std::make_shared<UvEmbUsb>();
     
     pubStatus = this->create_publisher<uvs_message::msg::UvEmbStatus>
-        ("uvemb_status", 1);
+        ("uvs_emb_status", 1);
     subArm = this->create_subscription<uvs_message::msg::UvEmbArm>
-        ("uvemb_arm", 1, std::bind(&UvEmbMaster::armCallback, this, std::placeholders::_1));
+        ("uvs_emb_arm", 1, std::bind(&UvEmbMaster::armCallback, this, std::placeholders::_1));
     subEmag = this->create_subscription<uvs_message::msg::UvEmbEmag>
-        ("uvemb_emag", 1, std::bind(&UvEmbMaster::emagCallback, this, std::placeholders::_1));
+        ("uvs_emb_emag", 1, std::bind(&UvEmbMaster::emagCallback, this, std::placeholders::_1));
     subKinetics = this->create_subscription<uvs_message::msg::UvEmbKinetics>
-        ("uvemb_kinetics", 1, std::bind(&UvEmbMaster::kineticsCallback, this, std::placeholders::_1));
+        ("uvs_emb_kinetics", 1, std::bind(&UvEmbMaster::kineticsCallback, this, std::placeholders::_1));
     
 }
 
