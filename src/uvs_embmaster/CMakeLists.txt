@@ -46,7 +46,7 @@ target_link_libraries(uvs_embmaster usb-1.0)
 
 install(
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libusb/ 
-  DESTINATION lib/${PROJECT_NAME}
+  DESTINATION lib
 )
 
 if(BUILD_TESTING)

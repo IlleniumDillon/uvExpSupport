@@ -45,7 +45,7 @@ target_link_libraries(uvs_optitrack NatNet)
 
 install(
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NatNet/ 
-  DESTINATION lib/${PROJECT_NAME}
+  DESTINATION lib
 )
 
 if(BUILD_TESTING)
