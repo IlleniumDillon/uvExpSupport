@@ -74,6 +74,8 @@ UvsOptitrack::UvsOptitrack()
     pClient = std::make_shared<NatNetClient>();
     // Set the frame callback handler
     pClient->SetFrameReceivedCallback(UvsOptitrack::DataHandler, this);
+
+    publisher = this->create_publisher<uvs_message::msg::UvOptPoseList>("uvs_pose_list", 1);
 }
 
 UvsOptitrack::~UvsOptitrack()

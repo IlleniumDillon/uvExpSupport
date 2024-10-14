@@ -8,6 +8,9 @@
 #include "uvs_message/msg/uv_emb_kinetics.hpp"
 #include "uvs_message/msg/uv_emb_status.hpp"
 
+#include "joystick.hpp"
+#include "uvs_limit.hpp"
+
 class UvsManualJoystick : public rclcpp::Node
 {
 public:
@@ -15,8 +18,8 @@ public:
     ~UvsManualJoystick();
 
 private:
-    void timer_callback();
     void status_callback(const uvs_message::msg::UvEmbStatus::SharedPtr msg);
+    void timer_callback();
 
     rclcpp::Publisher<uvs_message::msg::UvEmbArm>::SharedPtr arm_publisher;
     rclcpp::Publisher<uvs_message::msg::UvEmbEmag>::SharedPtr emag_publisher;
@@ -26,7 +29,13 @@ private:
     uvs_message::msg::UvEmbEmag emag_msg;
     uvs_message::msg::UvEmbKinetics kinetics_msg;
     uvs_message::msg::UvEmbStatus status_msg;
+
     rclcpp::TimerBase::SharedPtr timer;
+
+    std::shared_ptr<Joystick> joystick;
+    JoystickMap joystickEvent;
+
+    bool getFeedback = false;
 };
 
 #endif // UVS_MANUAL_JOYSTICK_HPP

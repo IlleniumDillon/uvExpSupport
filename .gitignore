@@ -12,7 +12,7 @@ ros2_ws.log
 .idea/
 
 # Generated documentation
-doc/
+# doc/
 
 # Miscellaneous
 *.pyc

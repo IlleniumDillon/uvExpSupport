@@ -3,6 +3,8 @@
 
 int main(int argc, char * argv[]) 
 {
-    std::cout << "Hello, World!" << std::endl;
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<UvsManualJoystick>());
+    rclcpp::shutdown();
     return 0;
 }
