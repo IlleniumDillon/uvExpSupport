@@ -30,10 +30,11 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/libusb
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include/uvs_embmaster
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol
   ${CMAKE_CURRENT_SOURCE_DIR}/ThreadManager
 )
 
-file (GLOB UVS_EMBMASTER_SOURCE "src/*.cpp")
+file (GLOB UVS_EMBMASTER_SOURCE "src/*.cpp" "src/*.c")
 
 BUILD_EXEC(
   TARGET uvs_embmaster

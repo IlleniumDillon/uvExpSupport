@@ -91,7 +91,7 @@ size_t UvEmbUsb::read_regCh(void *pdata, size_t size)
     if (impl->initDone)
     {
         int actual_length;
-        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_0_IN, (uint8_t*)pdata, size, &actual_length, 1);
+        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_0_IN, (uint8_t*)pdata, size, &actual_length, 10);
         return actual_length;
     }
     else
@@ -105,7 +105,7 @@ size_t UvEmbUsb::write_regCh(void *pdata, size_t size)
     if (impl->initDone)
     {
         int actual_length;
-        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_0_OUT, (uint8_t*)pdata, size, &actual_length, 1);
+        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_0_OUT, (uint8_t*)pdata, size, &actual_length, 10);
         return actual_length;
     }
     else
@@ -119,7 +119,7 @@ size_t UvEmbUsb::read_burCh(void *pdata, size_t size)
     if (impl->initDone)
     {
         int actual_length;
-        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_1_IN, (uint8_t*)pdata, size, &actual_length, 1);
+        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_1_IN, (uint8_t*)pdata, size, &actual_length, 10);
         return actual_length;
     }
     else
@@ -133,7 +133,7 @@ size_t UvEmbUsb::write_burCh(void *pdata, size_t size)
     if (impl->initDone)
     {
         int actual_length;
-        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_1_OUT, (uint8_t*)pdata, size, &actual_length, 1);
+        int rc = libusb_bulk_transfer(impl->devh, EPNUM_CDC_1_OUT, (uint8_t*)pdata, size, &actual_length, 10);
         return actual_length;
     }
     else

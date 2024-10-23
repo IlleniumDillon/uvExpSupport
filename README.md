@@ -12,11 +12,11 @@
     在usb端点0x82
 
     * drift8 voltage;   //V
-    * drift32 imuQuat[3];   //r,p,y
+    * drift32 imuQuat[4];   //w,x,y,z
     * drift16 wheelSpeeds[2];   //rad/s
     * uint16_t armAngles[2];    //49~2000
     
-    字节对齐，长度21字节
+    字节对齐，长度25字节
 
 2. 调试信息:
 
@@ -38,7 +38,7 @@
     在usb端点0x04
 
     * uint8_t flag == 0;
-    * uint16_t armAngles[2];    //49~2000
+    * uint16_t armAngles[2];    //49~4000
 
     字节对齐,长度5字节
 

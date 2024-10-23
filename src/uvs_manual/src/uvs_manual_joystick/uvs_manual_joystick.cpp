@@ -25,6 +25,7 @@ UvsManualJoystick::~UvsManualJoystick()
 
 void UvsManualJoystick::status_callback(const uvs_message::msg::UvEmbStatus::SharedPtr msg)
 {
+    if (getFeedback) return;
     status_msg = *msg;
     getFeedback = true;
 }
@@ -37,8 +38,9 @@ void UvsManualJoystick::timer_callback()
         return;
     }
     bool update = false;
-    while (joystick->sample(&joystickEvent)) {update = true;}
-    if (update)
+    // while (joystick->sample(&joystickEvent)) {update = true;}
+    // if (update)
+    joystick->sample(&joystickEvent);
     {
         // linear speed
         kinetics_msg.v = -LINEAR_SPEED * (float)joystickEvent.axis_r_ud / JOYSTICK_AXIS_MAX;
@@ -46,28 +48,28 @@ void UvsManualJoystick::timer_callback()
         kinetics_msg.w = -ANGULAR_SPEED * (float)joystickEvent.axis_r_lr / JOYSTICK_AXIS_MAX;
         // arm base
         int delta_base = -joystickEvent.axis_cross_ud / JOYSTICK_AXIS_MAX;
-        uint16_t arm_base = status_msg.arm_base_pos + delta_base;
-        if (arm_base < ARM_ANGLE_MIN)
+        status_msg.arm_base_pos = status_msg.arm_base_pos + delta_base * ARM_ANGLE_STEP;
+        if (status_msg.arm_base_pos < ARM_ANGLE_MIN)
         {
-            arm_base = ARM_ANGLE_MIN;
+            status_msg.arm_base_pos = ARM_ANGLE_MIN;
         }
-        else if (arm_base > ARM_ANGLE_MAX)
+        else if (status_msg.arm_base_pos > ARM_ANGLE_MAX)
         {
-            arm_base = ARM_ANGLE_MAX;
+            status_msg.arm_base_pos = ARM_ANGLE_MAX;
         }
-        arm_msg.arm_base = arm_base;
+        arm_msg.arm_base = status_msg.arm_base_pos;
         // arm arm
         int delta_arm = joystickEvent.button_y - joystickEvent.button_a;
-        uint16_t arm_arm = status_msg.arm_arm_pos + delta_arm;
-        if (arm_arm < ARM_ANGLE_MIN)
+        status_msg.arm_arm_pos = status_msg.arm_arm_pos + delta_arm * ARM_ANGLE_STEP;
+        if (status_msg.arm_arm_pos < ARM_ANGLE_MIN)
         {
-            arm_arm = ARM_ANGLE_MIN;
+            status_msg.arm_arm_pos = ARM_ANGLE_MIN;
         }
-        else if (arm_arm > ARM_ANGLE_MAX)
+        else if (status_msg.arm_arm_pos > ARM_ANGLE_MAX)
         {
-            arm_arm = ARM_ANGLE_MAX;
+            status_msg.arm_arm_pos = ARM_ANGLE_MAX;
         }
-        arm_msg.arm_arm = arm_arm;
+        arm_msg.arm_arm = status_msg.arm_arm_pos;
         // emag
         if (joystickEvent.axis_r2 == JOYSTICK_AXIS_MIN)
         {
@@ -78,7 +80,7 @@ void UvsManualJoystick::timer_callback()
             emag_msg.enable = 1;
         }
 
-        arm_publisher->publish(arm_msg);
+        arm_publisher->publish(arm_msg);      
         emag_publisher->publish(emag_msg);
         kinetics_publisher->publish(kinetics_msg);
     }
