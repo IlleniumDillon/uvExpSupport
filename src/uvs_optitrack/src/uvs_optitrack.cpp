@@ -167,6 +167,7 @@ bool UvsOptitrack::tryConnect()
         );
         return false;
     }
+
     updatedDataDescriptions = updateDataDescriptions();
     if (!updatedDataDescriptions)
     {
@@ -404,4 +405,6 @@ bool UvsOptitrack::updateDataDescriptions()
             }
         }
     }
+
+    return true;
 }
