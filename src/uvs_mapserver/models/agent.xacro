@@ -1,0 +1,28 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:macro name="unfoldVertex" params="vertex:=^">
+        <xacro:if value="${vertex}">
+            <xacro:property name="v" value="${vertex.pop(0)}"/>
+            <vertex>${v}</vertex>
+            <xacro:unfoldVertex/>
+        </xacro:if>
+    </xacro:macro>
+
+    <xacro:macro name="unfoldAnchor" params="anchor:=^">
+        <xacro:if value="${anchor}">
+            <xacro:property name="a" value="${anchor.pop(0)}"/>
+            <anchor>${a}</anchor>
+            <xacro:unfoldAnchor/>
+        </xacro:if>
+    </xacro:macro>
+    
+    <xacro:macro name="defineAgent" params="name vertex:=^ anchor:=^ initpose:=${[0,0,0]}">
+        <agent>
+            <name>${name}</name>
+            <pose>${initpose}</pose>
+            <xacro:unfoldVertex vertex="${list(vertex)}" />
+            <xacro:unfoldAnchor anchor="${list(anchor)}" />
+        </agent>
+    </xacro:macro>
+
+</world>

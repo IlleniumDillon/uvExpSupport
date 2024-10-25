@@ -1,0 +1,18 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:macro name="unfoldVertex" params="vertex:=^">
+        <xacro:if value="${vertex}">
+            <xacro:property name="v" value="${vertex.pop(0)}"/>
+            <vertex>${v}</vertex>
+            <xacro:unfoldVertex/>
+        </xacro:if>
+    </xacro:macro>
+    
+    <xacro:macro name="defineObstacle" params="vertex:=^ pose:=${[0,0,0]}">
+        <obstacle>
+            <pose>${pose}</pose>
+            <xacro:unfoldVertex vertex="${list(vertex)}" />
+        </obstacle>
+    </xacro:macro>
+
+</world>

@@ -30,7 +30,6 @@ def generate_launch_description():
     
     ld = LaunchDescription()
     
-    ### TODO: Add the launch node
     ld.add_action(LocalIPv4Addr)
     
     ld.add_action(ServerIPv4Addr)

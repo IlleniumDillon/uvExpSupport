@@ -1,0 +1,62 @@
+<world name='jxl3028' xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:include filename="../models/agent.xacro"/>
+    <xacro:include filename="../models/cargo.xacro"/>
+    <xacro:include filename="../models/ground.xacro"/>
+    <xacro:include filename="../models/obstacle.xacro"/>
+
+    <xacro:defineGround 
+        vertex="${
+            [-10,-10],
+            [10,-10],
+            [10,10],
+            [-10,10]
+        }"
+        origin="${[0,0]}"
+    />
+
+    <xacro:defineAgent 
+        name="agent1"
+        vertex="${
+            [0,0],
+            [1,0],
+            [1,1],
+            [0,1]
+        }"
+        anchor="${
+            [0,0],
+            [1,0],
+            [1,1],
+            [0,1]
+        }"
+        initpose="${[0,0,0]}"
+    />
+
+    <xacro:defineCargo 
+        name="cargo1"
+        vertex="${
+            [0,0],
+            [1,0],
+            [1,1],
+            [0,1]
+        }"
+        anchor="${
+            [0,0],
+            [1,0],
+            [1,1],
+            [0,1]
+        }"
+        initpose="${[0,0,0]}"
+    />
+
+    <xacro:defineObstacle 
+        vertex="${
+            [0,0],
+            [1,0],
+            [1,1],
+            [0,1]
+        }"
+        pose="${[0,0,0]}"
+    />
+
+</world>
