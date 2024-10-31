@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(uvs_mapserver)
+project(uvs_tools)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../ros2support.cmake)
 
@@ -25,34 +25,25 @@ FIND_PACKAGES(
   tf2_ros
   trajectory_msgs
   uvs_message
-  uvs_tools
 )
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/include/uvs_mapserver
+  ${CMAKE_SOURCE_DIR}/include/uvs_tools
   ${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/include
   ${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2
 )
 
-file (GLOB UVS_MAPSERVER_SRC_FILES
+file (GLOB UVS_TOOLS_SRC_FILES
   "${CMAKE_SOURCE_DIR}/src/*.cpp"
   "${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/src/lib_json/*.cpp"
   "${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2/*.cpp"
 )
 
-BUILD_EXEC(
-  TARGET uvs_mapserver
-  SOURCES ${UVS_MAPSERVER_SRC_FILES}
-  DEPENDENCIES rclcpp gazebo_dev gazebo_msgs gazebo_ros geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message uvs_tools
-)
-
-set(WORLDXACROFILE ${CMAKE_SOURCE_DIR}/world/jxl3028.world.xacro)
-GEN_XACRO(${WORLDXACROFILE})
-
-install(
-  DIRECTORY models world
-  DESTINATION share/${PROJECT_NAME}
+BUILD_LIB(
+  TARGET uvs_tools
+  SOURCES ${UVS_TOOLS_SRC_FILES}
+  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message
 )
 
 if(BUILD_TESTING)

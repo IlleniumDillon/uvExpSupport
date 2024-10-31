@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>uvs_mapserver</name>
+  <name>uvs_tools</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="1476900130@qq.com">jxl3028</maintainer>
@@ -18,8 +18,6 @@
   <depend>tf2_ros</depend>
   <depend>trajectory_msgs</depend>
   <depend>uvs_message</depend>
-  <depend>uvs_tools</depend>
-
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

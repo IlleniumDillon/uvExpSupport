@@ -24,6 +24,32 @@ macro(BUILD_EXEC)
     install(TARGETS ${BUILDEXEC_TARGET} DESTINATION lib/${PROJECT_NAME})
 endmacro()
 
+macro(BUILD_LIB)
+    set(options)
+    set(oneValueArgs TARGET)
+    set(multiValueArgs SOURCES DEPENDENCIES)
+    cmake_parse_arguments(BUILDLIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    message(NOTICE "Building library: ${BUILDLIB_TARGET}")
+    message(NOTICE "Sources: ${BUILDLIB_SOURCES}")
+    message(NOTICE "Dependencies: ${BUILDLIB_DEPENDENCIES}")
+
+    add_library(${BUILDLIB_TARGET} SHARED ${BUILDLIB_SOURCES})
+    target_include_directories(${BUILDLIB_TARGET} PUBLIC include)
+    
+    ament_target_dependencies(${BUILDLIB_TARGET} ${BUILDLIB_DEPENDENCIES})
+
+    ament_export_libraries(${BUILDLIB_TARGET})
+    ament_export_include_directories(include)
+
+    install(TARGETS ${BUILDLIB_TARGET}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin)
+
+    install(DIRECTORY include/ DESTINATION include)
+endmacro()
+
 macro(BUILD_GAZEBO_PLUGIN)
     set(options)
     set(oneValueArgs TARGET)
