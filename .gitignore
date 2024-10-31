@@ -27,3 +27,5 @@ Debug/
 .VSCodeCounter/
 
 libusb/
+
+*.world
