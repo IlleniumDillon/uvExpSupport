@@ -3,14 +3,14 @@
     <xacro:macro name="unfoldVertex" params="vertex:=^">
         <xacro:if value="${vertex}">
             <xacro:property name="v" value="${vertex.pop(0)}"/>
-            <vertex>${v}</vertex>
+            <vertex x="${v[0]}" y="${v[1]}" />
             <xacro:unfoldVertex/>
         </xacro:if>
     </xacro:macro>
     
     <xacro:macro name="defineObstacle" params="vertex:=^ pose:=${[0,0,0]}">
         <obstacle>
-            <pose>${pose}</pose>
+            <pose x="${pose[0]}" y="${pose[1]}" theta="${pose[2]}" />
             <xacro:unfoldVertex vertex="${list(vertex)}" />
         </obstacle>
     </xacro:macro>

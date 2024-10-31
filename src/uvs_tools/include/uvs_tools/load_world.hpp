@@ -28,6 +28,7 @@ public:
 class DSCP_Ground
 {
 public:
+    Point2D origin;
     Polygon2D shape;
 };
 class DSCP_Obstacle
@@ -38,15 +39,16 @@ public:
     Polygon2D footprint;
 };
 
-class DSCP_Scene
+class DSCP_World
 {
 public:
+    std::string name;
     DSCP_Ground ground;
     std::vector<DSCP_Agent> agents;
     std::vector<DSCP_Cargo> cargos;
     std::vector<DSCP_Obstacle> obstacles;
 };
 
-void loadWorld(DSCP_Scene& scene);
+void loadWorld(std::string name, DSCP_World& scene);
 
 #endif // UVS_MAPSERVER_LOAD_WORLD_HPP

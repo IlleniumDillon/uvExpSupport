@@ -3,7 +3,7 @@
     <xacro:macro name="unfoldVertex" params="vertex:=^">
         <xacro:if value="${vertex}">
             <xacro:property name="v" value="${vertex.pop(0)}"/>
-            <vertex>${v}</vertex>
+            <vertex x="${v[0]}" y="${v[1]}" />
             <xacro:unfoldVertex/>
         </xacro:if>
     </xacro:macro>
@@ -11,15 +11,14 @@
     <xacro:macro name="unfoldAnchor" params="anchor:=^">
         <xacro:if value="${anchor}">
             <xacro:property name="a" value="${anchor.pop(0)}"/>
-            <anchor>${a}</anchor>
+            <anchor x="${a[0]}" y="${a[1]}" />
             <xacro:unfoldAnchor/>
         </xacro:if>
     </xacro:macro>
     
-    <xacro:macro name="defineAgent" params="name vertex:=^ anchor:=^ initpose:=${[0,0,0]}">
-        <agent>
-            <name>${name}</name>
-            <pose>${initpose}</pose>
+    <xacro:macro name="defineAgent" params="name vertex:=^ anchor:=^ initpose:=${[0,0,0]} limit_speed">
+        <agent name="${name}" max_speed="${limit_speed[0]}" min_speed="${limit_speed[1]}" max_angular_speed="${limit_speed[2]}" min_angular_speed="${limit_speed[3]}">
+            <pose x="${initpose[0]}" y="${initpose[1]}" theta="${initpose[2]}" />
             <xacro:unfoldVertex vertex="${list(vertex)}" />
             <xacro:unfoldAnchor anchor="${list(anchor)}" />
         </agent>

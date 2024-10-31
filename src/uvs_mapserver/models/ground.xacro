@@ -3,14 +3,14 @@
     <xacro:macro name="unfoldVertex" params="vertex:=^">
         <xacro:if value="${vertex}">
             <xacro:property name="v" value="${vertex.pop(0)}"/>
-            <vertex>${v}</vertex>
+            <vertex x="${v[0]}" y="${v[1]}" />
             <xacro:unfoldVertex/>
         </xacro:if>
     </xacro:macro>
     
     <xacro:macro name="defineGround" params="vertex:=^ origin:=${[0,0]}">
         <ground>
-            <origin>${origin}</origin>
+            <origin x="${origin[0]}" y="${origin[1]}" />
             <xacro:unfoldVertex vertex="${list(vertex)}" />
         </ground>
     </xacro:macro>

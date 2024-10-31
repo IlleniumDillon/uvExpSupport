@@ -5,41 +5,39 @@
 <!-- =================================================================================== -->
 <world name="jxl3028">
   <ground>
-    <origin>[0, 0]</origin>
-    <vertex>[-10, -10]</vertex>
-    <vertex>[10, -10]</vertex>
-    <vertex>[10, 10]</vertex>
-    <vertex>[-10, 10]</vertex>
+    <origin x="0" y="0"/>
+    <vertex x="-10" y="-10"/>
+    <vertex x="10" y="-10"/>
+    <vertex x="10" y="10"/>
+    <vertex x="-10" y="10"/>
   </ground>
-  <agent>
-    <name>agent1</name>
-    <pose>[0, 0, 0]</pose>
-    <vertex>[0, 0]</vertex>
-    <vertex>[1, 0]</vertex>
-    <vertex>[1, 1]</vertex>
-    <vertex>[0, 1]</vertex>
-    <anchor>[0, 0]</anchor>
-    <anchor>[1, 0]</anchor>
-    <anchor>[1, 1]</anchor>
-    <anchor>[0, 1]</anchor>
+  <agent max_angular_speed="1" max_speed="1" min_angular_speed="0" min_speed="0" name="agent1">
+    <pose theta="0" x="0" y="0"/>
+    <vertex x="0" y="0"/>
+    <vertex x="1" y="0"/>
+    <vertex x="1" y="1"/>
+    <vertex x="0" y="1"/>
+    <anchor x="0" y="0"/>
+    <anchor x="1" y="0"/>
+    <anchor x="1" y="1"/>
+    <anchor x="0" y="1"/>
   </agent>
-  <Cargo>
-    <name>cargo1</name>
-    <pose>[0, 0, 0]</pose>
-    <vertex>[0, 0]</vertex>
-    <vertex>[1, 0]</vertex>
-    <vertex>[1, 1]</vertex>
-    <vertex>[0, 1]</vertex>
-    <anchor>[0, 0]</anchor>
-    <anchor>[1, 0]</anchor>
-    <anchor>[1, 1]</anchor>
-    <anchor>[0, 1]</anchor>
-  </Cargo>
+  <cargo name="cargo1">
+    <pose theta="0" x="0" y="0"/>
+    <vertex x="0" y="0"/>
+    <vertex x="1" y="0"/>
+    <vertex x="1" y="1"/>
+    <vertex x="0" y="1"/>
+    <anchor x="0" y="0"/>
+    <anchor x="1" y="0"/>
+    <anchor x="1" y="1"/>
+    <anchor x="0" y="1"/>
+  </cargo>
   <obstacle>
-    <pose>[0, 0, 0]</pose>
-    <vertex>[0, 0]</vertex>
-    <vertex>[1, 0]</vertex>
-    <vertex>[1, 1]</vertex>
-    <vertex>[0, 1]</vertex>
+    <pose theta="0" x="0" y="0"/>
+    <vertex x="0" y="0"/>
+    <vertex x="1" y="0"/>
+    <vertex x="1" y="1"/>
+    <vertex x="0" y="1"/>
   </obstacle>
 </world>

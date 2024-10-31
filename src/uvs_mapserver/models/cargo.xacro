@@ -3,7 +3,7 @@
     <xacro:macro name="unfoldVertex" params="vertex:=^">
         <xacro:if value="${vertex}">
             <xacro:property name="v" value="${vertex.pop(0)}"/>
-            <vertex>${v}</vertex>
+            <vertex x="${v[0]}" y="${v[1]}" />
             <xacro:unfoldVertex/>
         </xacro:if>
     </xacro:macro>
@@ -11,18 +11,17 @@
     <xacro:macro name="unfoldAnchor" params="anchor:=^">
         <xacro:if value="${anchor}">
             <xacro:property name="a" value="${anchor.pop(0)}"/>
-            <anchor>${a}</anchor>
+            <anchor x="${a[0]}" y="${a[1]}" />
             <xacro:unfoldAnchor/>
         </xacro:if>
     </xacro:macro>
     
     <xacro:macro name="defineCargo" params="name vertex:=^ anchor:=^ initpose:=${[0,0,0]}">
-        <Cargo>
-            <name>${name}</name>
-            <pose>${initpose}</pose>
+        <cargo name="${name}">
+            <pose x="${initpose[0]}" y="${initpose[1]}" theta="${initpose[2]}" />
             <xacro:unfoldVertex vertex="${list(vertex)}" />
             <xacro:unfoldAnchor anchor="${list(anchor)}" />
-        </Cargo>
+        </cargo>
     </xacro:macro>
 
 </world>
