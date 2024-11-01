@@ -8,8 +8,8 @@
         </xacro:if>
     </xacro:macro>
     
-    <xacro:macro name="defineGround" params="vertex:=^ origin:=${[0,0]}">
-        <ground>
+    <xacro:macro name="defineGround" params="vertex:=^ origin:=${[0,0]} resolutionX resolutionY">
+        <ground resolutionX="${resolutionX}" resolutionY="${resolutionY}">
             <origin x="${origin[0]}" y="${origin[1]}" />
             <xacro:unfoldVertex vertex="${list(vertex)}" />
         </ground>

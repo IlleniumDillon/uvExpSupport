@@ -30,6 +30,8 @@ class DSCP_Ground
 public:
     Point2D origin;
     Polygon2D shape;
+    double resolutionX;
+    double resolutionY;
 };
 class DSCP_Obstacle
 {

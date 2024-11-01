@@ -5,18 +5,50 @@
     <xacro:include filename="../models/ground.xacro"/>
     <xacro:include filename="../models/obstacle.xacro"/>
 
+    <!-- 一格0.58米 箱子0.455米 -->
+    <!-- 车宽0.238 长 0.34 -->
+    <xacro:property name="block_w" value="0.58"/>
+    <xacro:property name="cargo_w" value="0.455"/>
+
+    <xacro:macro name="putDefaultCargo" params="name initpose">
+        <xacro:defineCargo 
+            name="${name}"
+            vertex="${[[-cargo_w/2,-cargo_w/2],
+            [-cargo_w/2,cargo_w/2],
+            [cargo_w/2,cargo_w/2],
+            [cargo_w/2,-cargo_w/2]]}"
+            anchor="${[[0,-cargo_w/2],
+            [0,cargo_w/2],
+            [-cargo_w/2,0],
+            [cargo_w/2,0]]}"
+            initpose="${initpose}"
+        />
+    </xacro:macro>
+
+    <xacro:macro name="putDefaultObstacle" params="pose">
+        <xacro:defineObstacle 
+            vertex="${[[-cargo_w/2,-cargo_w/2],
+            [-cargo_w/2,cargo_w/2],
+            [cargo_w/2,cargo_w/2],
+            [cargo_w/2,-cargo_w/2]]}"
+            pose="${pose}"
+        />
+    </xacro:macro>
+
     <xacro:defineGround 
         vertex="${[
-            [-10,-10],
-            [10,-10],
-            [10,10],
-            [-10,10]
+            [-block_w*6,-block_w*7],
+            [block_w*5,-block_w*7],
+            [block_w*5,block_w*8],
+            [-block_w*6,block_w*8]
         ]}"
         origin="${[0,0]}"
+        resolutionX="0.05"
+        resolutionY="0.05"
     />
 
     <xacro:defineAgent 
-        name="agent1"
+        name="uv05"
         vertex="${
             [0,0],
             [1,0],
@@ -33,31 +65,8 @@
         limit_speed="${[1,0,1,0]}"
     />
 
-    <xacro:defineCargo 
-        name="cargo1"
-        vertex="${
-            [0,0],
-            [1,0],
-            [1,1],
-            [0,1]
-        }"
-        anchor="${
-            [0,0],
-            [1,0],
-            [1,1],
-            [0,1]
-        }"
-        initpose="${[0,0,0]}"
-    />
+    <xacro:putDefaultCargo name="cargo1" initpose="${[0,0,0]}"/>
 
-    <xacro:defineObstacle 
-        vertex="${
-            [0,0],
-            [1,0],
-            [1,1],
-            [0,1]
-        }"
-        pose="${[0,0,0]}"
-    />
+    <xacro:putDefaultObstacle pose="${[0,0,0]}"/>
 
 </world>

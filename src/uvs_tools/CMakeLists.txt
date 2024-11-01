@@ -25,6 +25,7 @@ FIND_PACKAGES(
   tf2_ros
   trajectory_msgs
   uvs_message
+  OpenCV
 )
 
 include_directories(
@@ -43,7 +44,7 @@ file (GLOB UVS_TOOLS_SRC_FILES
 BUILD_LIB(
   TARGET uvs_tools
   SOURCES ${UVS_TOOLS_SRC_FILES}
-  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message
+  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message OpenCV
 )
 
 if(BUILD_TESTING)

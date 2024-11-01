@@ -57,6 +57,9 @@ void loadWorld(std::string name, DSCP_World &scene)
         return;
     }
     std::cout << "ground" << std::endl;
+    scene.ground.resolutionX = pGround->DoubleAttribute("resolutionX");
+    scene.ground.resolutionY = pGround->DoubleAttribute("resolutionY");
+    std::cout << "resolutionX: " << scene.ground.resolutionX << ", resolutionY: " << scene.ground.resolutionY << std::endl;
     tinyxml2::XMLElement *pGPoint = pGround->FirstChildElement("vertex");
     if (pGPoint == nullptr)
     {
