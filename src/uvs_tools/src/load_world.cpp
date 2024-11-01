@@ -193,5 +193,45 @@ void loadWorld(std::string name, DSCP_World &scene)
     for (; pObstacle != nullptr; pObstacle = pObstacle->NextSiblingElement("obstacle"))
     {
         DSCP_Obstacle obstacle;
+        std::cout << "obstacle" << std::endl;
+        tinyxml2::XMLElement *pPoint = pObstacle->FirstChildElement("vertex");
+        if (pPoint == nullptr)
+        {
+            RCLCPP_ERROR(rclcpp::get_logger("uvs_tools"), "Failed to find vertex element");
+            doc.Clear();
+            return;
+        }
+        for (; pPoint != nullptr; pPoint = pPoint->NextSiblingElement("vertex"))
+        {
+            Point2D point;
+            point.x = pPoint->DoubleAttribute("x");
+            point.y = pPoint->DoubleAttribute("y");
+            obstacle.shape.points.push_back(point);
+            std::cout << "vertex: " << point.x << ", " << point.y << std::endl;
+        }
+        
+        tinyxml2::XMLElement *pPose = pObstacle->FirstChildElement("pose");
+        if (pPose == nullptr)
+        {
+            RCLCPP_ERROR(rclcpp::get_logger("uvs_tools"), "Failed to find origin element");
+            doc.Clear();
+            return;
+        }
+        obstacle.pose.x = pPose->DoubleAttribute("x");
+        obstacle.pose.y = pPose->DoubleAttribute("y");
+        obstacle.pose.theta = pPose->DoubleAttribute("theta");
+        std::cout << "pose: " << obstacle.pose.x << ", " << obstacle.pose.y << ", " << obstacle.pose.theta << std::endl;
+
+        // Calculate footprint based on shape and pose
+        for (const auto& point : obstacle.shape.points)
+        {
+            Point2D transformed_point;
+            transformed_point.x = point.x * cos(obstacle.pose.theta) - point.y * sin(obstacle.pose.theta) + obstacle.pose.x;
+            transformed_point.y = point.x * sin(obstacle.pose.theta) + point.y * cos(obstacle.pose.theta) + obstacle.pose.y;
+            obstacle.footprint.points.push_back(transformed_point);
+            std::cout << "footprint: " << transformed_point.x << ", " << transformed_point.y << std::endl;
+        }
+
+        scene.obstacles.push_back(obstacle);
     }
 }
