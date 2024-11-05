@@ -70,11 +70,9 @@ UVSMapServer::UVSMapServer()
     uv_opt_pose_list_sub_ = create_subscription<uvs_message::msg::UvOptPoseList>("uv_opt_pose_list",
         10, std::bind(&UVSMapServer::uvOptPoseListCallback, this, std::placeholders::_1));
 
-    // map_static_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map_static", 10);
-    // timer_ = create_wall_timer(std::chrono::milliseconds(100), [this]() {
-    //     map_static_.header.stamp = now();
-    //     map_static_pub_->publish(map_static_);
-    // });
+    map_static_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map", 10);
+    timer_callback_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+    timer_ = create_wall_timer(std::chrono::milliseconds(33), std::bind(&UVSMapServer::timerCallback, this), timer_callback_group_);
 
     RCLCPP_INFO(get_logger(), "UVSMapServer is ready.");
 }
@@ -88,15 +86,30 @@ void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<rmw_request_id_t
     const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request, 
     std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response)
 {
-    for (auto &qname : request->name_list)
+    if (request->name_list.size() == 0)
     {
-        if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
+        for (auto &o : world_.obstacles)
         {
-            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
-            response->pose_list.clear();
-            return;
+            geometry_msgs::msg::Pose pose;
+            pose.position.x = o.pose.x;
+            pose.position.y = o.pose.y;
+            pose.position.z = 0;
+            pose.orientation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0, 0, 1), o.pose.theta));
+            response->pose_list.push_back(pose);
         }
-        response->pose_list.push_back(uv_opt_poses_[qname]);
+    }
+    else
+    {
+        for (auto &qname : request->name_list)
+        {
+            if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
+            {
+                RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
+                response->pose_list.clear();
+                return;
+            }
+            response->pose_list.push_back(uv_opt_poses_[qname]);
+        }
     }
 }
 
@@ -123,10 +136,10 @@ void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> re
         Pose2D pose(pose_opt.position.x, pose_opt.position.y, tf2::getYaw(pose_opt.orientation));
 
         auto& fp = fps.second;
-        for (auto& point : fp.second)
-        {
-            response->map.data[point.y * map_static_.info.width + point.x] = 0;
-        }
+        // for (auto& point : fp.second)
+        // {
+        //     response->map.data[point.y * map_static_.info.width + point.x] = 0;
+        // }
         Polygon2D temp = fp.first.transform(pose);
         fp.second = getFootprint(temp, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(map_static_.info.origin.position.x, map_static_.info.origin.position.y));
         for (auto& point : fp.second)
@@ -145,6 +158,59 @@ void UVSMapServer::uvOptPoseListCallback(const uvs_message::msg::UvOptPoseList::
     {
         uv_opt_poses_[uv_opt_pose.name] = uv_opt_pose.pose;
     }
+}
+
+void UVSMapServer::timerCallback()
+{
+    nav_msgs::msg::OccupancyGrid map = map_static_;
+    map.header.stamp = now();
+    for (auto &fps : cargo_shape_)
+    {
+        auto it_pose_opt = uv_opt_poses_.find(fps.first);
+        if (it_pose_opt == uv_opt_poses_.end())
+        {
+            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
+            continue;
+        }
+        geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
+        Pose2D pose(pose_opt.position.x, pose_opt.position.y, tf2::getYaw(pose_opt.orientation));
+
+        auto& fp = fps.second;
+        // for (auto& point : fp.second)
+        // {
+        //     response->map.data[point.y * map_static_.info.width + point.x] = 0;
+        // }
+        Polygon2D temp = fp.first.transform(pose);
+        fp.second = getFootprint(temp, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(map_static_.info.origin.position.x, map_static_.info.origin.position.y));
+        for (auto& point : fp.second)
+        {
+            map.data[point.y * map_static_.info.width + point.x] = 75;
+        }
+    }
+    for (auto &a : world_.agents)
+    {
+        auto it_pose_opt = uv_opt_poses_.find(a.name);
+        if (it_pose_opt == uv_opt_poses_.end())
+        {
+            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", a.name.c_str());
+            continue;
+        }
+        geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
+        Pose2D pose(pose_opt.position.x, pose_opt.position.y, tf2::getYaw(pose_opt.orientation));
+
+        auto& fp = a.shape;
+        // for (auto& point : fp.second)
+        // {
+        //     response->map.data[point.y * map_static_.info.width + point.x] = 0;
+        // }
+        Polygon2D temp = fp.transform(pose);
+        std::vector<Point2I> footprint = getFootprint(temp, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(map_static_.info.origin.position.x, map_static_.info.origin.position.y));
+        for (auto& point : footprint)
+        {
+            map.data[point.y * map_static_.info.width + point.x] = 50;
+        }
+    }
+    map_static_pub_->publish(map);
 }
 
 std::vector<Point2I> UVSMapServer::getFootprint(const Polygon2D &shape, const double &resolutionX, const double &resolutionY, const Point2D &origin)

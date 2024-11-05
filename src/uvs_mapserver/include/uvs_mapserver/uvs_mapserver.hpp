@@ -28,6 +28,8 @@ private:
 
     void uvOptPoseListCallback(const uvs_message::msg::UvOptPoseList::SharedPtr msg);
 
+    void timerCallback();
+
     std::vector<Point2I> getFootprint(const Polygon2D &shape, const double& resolutionX, const double& resolutionY, const Point2D &origin);
 
 private:
@@ -35,8 +37,9 @@ private:
     rclcpp::Service<uvs_message::srv::UvQueryMap>::SharedPtr uv_query_map_service_;
     rclcpp::Subscription<uvs_message::msg::UvOptPoseList>::SharedPtr uv_opt_pose_list_sub_;
     /// test
-    // rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr map_static_pub_;
-    // rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr map_static_pub_;
+    rclcpp::CallbackGroup::SharedPtr timer_callback_group_;
+    rclcpp::TimerBase::SharedPtr timer_;
     /// 
     nav_msgs::msg::OccupancyGrid map_static_;
     std::map<std::string, geometry_msgs::msg::Pose> uv_opt_poses_;

@@ -29,6 +29,7 @@ FIND_PACKAGES(
 
 INSTALL_DIR(
   launch 
+  rviz
 )
 
 if(BUILD_TESTING)

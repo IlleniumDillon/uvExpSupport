@@ -19,7 +19,7 @@ public:
         uv_query_element_client_ = create_client<uvs_message::srv::UvQueryElement>("uv_query_element", rmw_qos_profile_services_default, qelement_callback_group_);
         uv_query_map_client_ = create_client<uvs_message::srv::UvQueryMap>("uv_query_map", rmw_qos_profile_services_default, qmap_callback_group_);
         uv_opt_pose_list_pub_ = create_publisher<uvs_message::msg::UvOptPoseList>("uv_opt_pose_list", 1);
-        map_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map", 1);
+        // map_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map", 1);
         timer_ = create_wall_timer(std::chrono::milliseconds(100), std::bind(&UVSMapServerTest::timerCallback, this), timer_callback_group_);
         timer2_ = create_wall_timer(std::chrono::milliseconds(3), std::bind(&UVSMapServerTest::timerCallback2, this), timer_callback_group_);
     }
@@ -33,7 +33,7 @@ private:
         if (status == std::future_status::ready)
         {
             auto response = result.get();
-            map_pub_->publish(response->map);
+            // map_pub_->publish(response->map);
         }
         else
         {
@@ -50,6 +50,16 @@ private:
         uvs_message::msg::UvOptPose uv_opt_pose;
         uv_opt_pose.name = "cargo1";
         uv_opt_pose.pose.position.x = 1.0;
+        uv_opt_pose.pose.position.y = 1.0;
+        uv_opt_pose.pose.position.z = 0.0;
+        uv_opt_pose.pose.orientation.x = 0.0;
+        uv_opt_pose.pose.orientation.y = 0.0;
+        uv_opt_pose.pose.orientation.z = 0.0;
+        uv_opt_pose.pose.orientation.w = 1.0;
+        msg.pose_list.push_back(uv_opt_pose);
+
+        uv_opt_pose.name = "uv05";
+        uv_opt_pose.pose.position.x = -1.0;
         uv_opt_pose.pose.position.y = 1.0;
         uv_opt_pose.pose.position.z = 0.0;
         uv_opt_pose.pose.orientation.x = 0.0;

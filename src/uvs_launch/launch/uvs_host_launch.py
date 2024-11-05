@@ -21,11 +21,16 @@ def generate_launch_description():
     package_name = 'uvs_launch'
     package_share_dir = get_package_share_directory(package_name)
     
+    mapserver_package_share_dir = get_package_share_directory('uvs_mapserver')
+    
     LocalIPv4Addr = DeclareLaunchArgument(
         "LocalIPv4Addr",default_value=TextSubstitution(text='192.168.50.101')
     )
     ServerIPv4Addr = DeclareLaunchArgument(
         "ServerIPv4Addr",default_value=TextSubstitution(text='192.168.50.194')
+    )
+    WorldName = DeclareLaunchArgument(
+        "WorldName",default_value=TextSubstitution(text='jxl3028')
     )
     
     ld = LaunchDescription()
@@ -33,6 +38,8 @@ def generate_launch_description():
     ld.add_action(LocalIPv4Addr)
     
     ld.add_action(ServerIPv4Addr)
+    
+    ld.add_action(WorldName)
     
     ld.add_action(
         Node(
@@ -48,8 +55,16 @@ def generate_launch_description():
     
     ld.add_action(
         Node(
-            package='uvs_embmaster',
-            executable='uvs_embmaster',
+            package='uvs_mapserver',
+            executable='uvs_mapserver',
+            output='screen',
+            parameters=[{"WorldName": LaunchConfiguration("WorldName")}]
+        )
+    )
+    
+    ld.add_action(
+        ExecuteProcess(
+            cmd=["rviz2", "-d", os.path.join(package_share_dir, "rviz", "default.rviz")],
             output='screen'
         )
     )
