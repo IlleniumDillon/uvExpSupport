@@ -67,6 +67,17 @@
 
     <xacro:putDefaultCargo name="cargo1" initpose="${[0,0,0]}"/>
 
-    <xacro:putDefaultObstacle pose="${[0,0,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-3.19,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-2.61,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-2.03,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-1.45,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.87,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,1.45,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,2.03,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,2.61,0]}"/>
+    <xacro:putDefaultObstacle pose="${[1.45,-2.03,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-1.45,-1.45,0]}"/>
 
 </world>

@@ -38,3 +38,16 @@ std::vector<Point2I> Polygon2D::distribute(double resolutionX, double resolution
 
     return points;
 }
+
+Polygon2D Polygon2D::transform(const Pose2D &pose) const
+{
+    Polygon2D poly = *this;
+    for (auto &point : poly.points)
+    {
+        double x = point.x * cos(pose.theta) - point.y * sin(pose.theta) + pose.x;
+        double y = point.x * sin(pose.theta) + point.y * cos(pose.theta) + pose.y;
+        point.x = x;
+        point.y = y;
+    }
+    return poly;
+}

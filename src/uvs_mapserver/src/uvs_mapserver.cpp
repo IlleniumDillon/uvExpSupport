@@ -49,7 +49,7 @@ UVSMapServer::UVSMapServer()
     // 2. 遍历所有障碍物，填充静态占用
     for (auto &obstacle : world_.obstacles)
     {
-        std::vector<Point2I> polygon_obstacle = getFootprint(obstacle.shape, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(min_x, min_y));
+        std::vector<Point2I> polygon_obstacle = getFootprint(obstacle.footprint, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(min_x, min_y));
         for (auto &point : polygon_obstacle)
         {
             map_static_.data[point.y * width + point.x] = 100;
@@ -59,23 +59,22 @@ UVSMapServer::UVSMapServer()
     for (auto &cargo : world_.cargos)
     {
         std::vector<Point2I> polygon_cargo = getFootprint(cargo.shape, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(min_x, min_y));
-        cargo_footprints_[cargo.name] = polygon_cargo;
-        cargo_shape_[cargo.name] = polygon_cargo;
+        cargo_shape_[cargo.name] = std::make_pair(cargo.shape, std::vector<Point2I>());
     }
 
 
     uv_query_element_service_ = create_service<uvs_message::srv::UvQueryElement>("uv_query_element", 
-        std::bind(&UVSMapServer::uvQueryElementCallback, this, std::placeholders::_1, std::placeholders::_2));
+        std::bind(&UVSMapServer::uvQueryElementCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     uv_query_map_service_ = create_service<uvs_message::srv::UvQueryMap>("uv_query_map",
-        std::bind(&UVSMapServer::uvQueryMapCallback, this, std::placeholders::_1, std::placeholders::_2));
+        std::bind(&UVSMapServer::uvQueryMapCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     uv_opt_pose_list_sub_ = create_subscription<uvs_message::msg::UvOptPoseList>("uv_opt_pose_list",
         10, std::bind(&UVSMapServer::uvOptPoseListCallback, this, std::placeholders::_1));
 
-    map_static_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map_static", 10);
-    timer_ = create_wall_timer(std::chrono::milliseconds(100), [this]() {
-        map_static_.header.stamp = now();
-        map_static_pub_->publish(map_static_);
-    });
+    // map_static_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map_static", 10);
+    // timer_ = create_wall_timer(std::chrono::milliseconds(100), [this]() {
+    //     map_static_.header.stamp = now();
+    //     map_static_pub_->publish(map_static_);
+    // });
 
     RCLCPP_INFO(get_logger(), "UVSMapServer is ready.");
 }
@@ -85,7 +84,8 @@ UVSMapServer::~UVSMapServer()
 }
 
 
-void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request, 
+void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<rmw_request_id_t> request_header,
+    const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request, 
     std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response)
 {
     for (auto &qname : request->name_list)
@@ -100,7 +100,8 @@ void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<uvs_message::srv
     }
 }
 
-void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<uvs_message::srv::UvQueryMap::Request> request, 
+void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> request_header,
+    const std::shared_ptr<uvs_message::srv::UvQueryMap::Request> request, 
     std::shared_ptr<uvs_message::srv::UvQueryMap::Response> response)
 {
     if (request->name != world_.name)
@@ -110,7 +111,7 @@ void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<uvs_message::srv::Uv
     }
     map_static_.header.stamp = now();
     response->map = map_static_;
-    for (auto &fps : cargo_footprints_)
+    for (auto &fps : cargo_shape_)
     {
         auto it_pose_opt = uv_opt_poses_.find(fps.first);
         if (it_pose_opt == uv_opt_poses_.end())
@@ -122,14 +123,17 @@ void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<uvs_message::srv::Uv
         Pose2D pose(pose_opt.position.x, pose_opt.position.y, tf2::getYaw(pose_opt.orientation));
 
         auto& fp = fps.second;
-        for (auto &point : fp)
+        for (auto& point : fp.second)
         {
             response->map.data[point.y * map_static_.info.width + point.x] = 0;
-            // update
-            point.x = point.x * cos(pose.theta) - point.y * sin(pose.theta) + pose.x;
-            point.y = point.x * sin(pose.theta) + point.y * cos(pose.theta) + pose.y;
-            response->map.data[point.y * map_static_.info.width + point.x] = 100;
         }
+        Polygon2D temp = fp.first.transform(pose);
+        fp.second = getFootprint(temp, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(map_static_.info.origin.position.x, map_static_.info.origin.position.y));
+        for (auto& point : fp.second)
+        {
+            response->map.data[point.y * map_static_.info.width + point.x] = 75;
+        }
+
     }
 }
 

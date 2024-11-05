@@ -36,7 +36,8 @@ include_directories(
 )
 
 file (GLOB UVS_MAPSERVER_SRC_FILES
-  "${CMAKE_SOURCE_DIR}/src/*.cpp"
+  "${CMAKE_SOURCE_DIR}/src/uvs_mapserver.cpp"
+  "${CMAKE_SOURCE_DIR}/src/uvs_mapserver_main.cpp"
   "${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/src/lib_json/*.cpp"
   "${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2/*.cpp"
 )
@@ -44,6 +45,12 @@ file (GLOB UVS_MAPSERVER_SRC_FILES
 BUILD_EXEC(
   TARGET uvs_mapserver
   SOURCES ${UVS_MAPSERVER_SRC_FILES}
+  DEPENDENCIES rclcpp gazebo_dev gazebo_msgs gazebo_ros geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message uvs_tools
+)
+
+BUILD_EXEC(
+  TARGET uvs_mapserver_test
+  SOURCES ${CMAKE_SOURCE_DIR}/src/uvs_mapserver_test.cpp
   DEPENDENCIES rclcpp gazebo_dev gazebo_msgs gazebo_ros geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message uvs_tools
 )
 

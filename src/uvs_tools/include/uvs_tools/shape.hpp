@@ -103,6 +103,7 @@ public:
     std::vector<Point2D> points;
 public:
     std::vector<Point2I> distribute(double resolutionX, double resolutionY, const Point2D &origin) const;
+    Polygon2D transform(const Pose2D &pose) const; 
 };
 
 #endif // UVS_TOOLS_SHAPE_HPP
