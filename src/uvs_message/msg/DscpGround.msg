@@ -1,0 +1,4 @@
+geometry_msgs/Point32 origin
+geometry_msgs/Polygon shape
+float32 resolution_x
+float32 resolution_y

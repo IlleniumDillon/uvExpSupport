@@ -3,6 +3,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
+#include "uvs_message/srv/uv_query_world.hpp"
 #include "uvs_message/srv/uv_query_element.hpp"
 #include "uvs_message/srv/uv_query_map.hpp"
 #include "uvs_message/msg/uv_opt_pose_list.hpp"
@@ -16,6 +17,11 @@ public:
     ~UVSMapServer();
 
 private:
+    void uvQueryWorldCallback(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<uvs_message::srv::UvQueryWorld::Request> request,
+        std::shared_ptr<uvs_message::srv::UvQueryWorld::Response> response);
+        
     void uvQueryElementCallback(
         const std::shared_ptr<rmw_request_id_t> request_header,
         const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request,
@@ -35,6 +41,7 @@ private:
 private:
     rclcpp::Service<uvs_message::srv::UvQueryElement>::SharedPtr uv_query_element_service_;
     rclcpp::Service<uvs_message::srv::UvQueryMap>::SharedPtr uv_query_map_service_;
+    rclcpp::Service<uvs_message::srv::UvQueryWorld>::SharedPtr uv_query_world_service_;
     rclcpp::Subscription<uvs_message::msg::UvOptPoseList>::SharedPtr uv_opt_pose_list_sub_;
     /// test
     rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr map_static_pub_;

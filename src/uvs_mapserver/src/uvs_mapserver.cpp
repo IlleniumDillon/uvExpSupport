@@ -5,7 +5,9 @@
 UVSMapServer::UVSMapServer()
     : Node("uvs_mapserver")
 {
-    loadWorld("jxl3028", world_);
+    declare_parameter<std::string>("world_name", "jxl3028");
+    std::string world_name = get_parameter("world_name").as_string();
+    loadWorld(world_name, world_);
 
     // 生成静态地图
     RCLCPP_INFO(get_logger(), "Generating static map...");
@@ -62,7 +64,8 @@ UVSMapServer::UVSMapServer()
         cargo_shape_[cargo.name] = std::make_pair(cargo.shape, std::vector<Point2I>());
     }
 
-
+    uv_query_world_service_ = create_service<uvs_message::srv::UvQueryWorld>("uv_query_world", 
+        std::bind(&UVSMapServer::uvQueryWorldCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     uv_query_element_service_ = create_service<uvs_message::srv::UvQueryElement>("uv_query_element", 
         std::bind(&UVSMapServer::uvQueryElementCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     uv_query_map_service_ = create_service<uvs_message::srv::UvQueryMap>("uv_query_map",
@@ -81,35 +84,110 @@ UVSMapServer::~UVSMapServer()
 {
 }
 
+void UVSMapServer::uvQueryWorldCallback(const std::shared_ptr<rmw_request_id_t> request_header, 
+                                        const std::shared_ptr<uvs_message::srv::UvQueryWorld::Request> request, 
+                                        std::shared_ptr<uvs_message::srv::UvQueryWorld::Response> response)
+{
+    response->world_name = world_.name;
+
+    uvs_message::msg::DscpGround ground;
+    ground.origin.x = world_.ground.origin.x;
+    ground.origin.y = world_.ground.origin.y;
+    ground.origin.z = 0;
+    ground.resolution_x = world_.ground.resolutionX;
+    ground.resolution_y = world_.ground.resolutionY;
+    for (auto &point : world_.ground.shape.points)
+    {
+        geometry_msgs::msg::Point32 p;
+        p.x = point.x;
+        p.y = point.y;
+        p.z = 0;
+        ground.shape.points.push_back(p);
+    }
+    response->ground = ground;
+
+    for (auto &obstacle : world_.obstacles)
+    {
+        uvs_message::msg::DscpObstacle obs;
+        obs.pose.x = obstacle.pose.x;
+        obs.pose.y = obstacle.pose.y;
+        obs.pose.theta = obstacle.pose.theta;
+
+        for (auto &point : obstacle.shape.points)
+        {
+            geometry_msgs::msg::Point32 p;
+            p.x = point.x;
+            p.y = point.y;
+            p.z = 0;
+            obs.shape.points.push_back(p);
+        }
+        response->obstacles.push_back(obs);
+    }
+
+    for (auto &cargo : world_.cargos)
+    {
+        uvs_message::msg::DscpCargo c;
+        c.name = cargo.name;
+
+        for (auto &point : cargo.shape.points)
+        {
+            geometry_msgs::msg::Point32 p;
+            p.x = point.x;
+            p.y = point.y;
+            p.z = 0;
+            c.shape.points.push_back(p);
+        }
+        for (auto &anchor : cargo.anchors)
+        {
+            geometry_msgs::msg::Point32 p;
+            p.x = anchor.x;
+            p.y = anchor.y;
+            p.z = 0;
+            c.anchors.push_back(p);
+        }
+        response->cargos.push_back(c);
+    }
+
+    for (auto &agent : world_.agents)
+    {
+        uvs_message::msg::DscpAgent a;
+        a.name = agent.name;
+
+        for (auto &point : agent.shape.points)
+        {
+            geometry_msgs::msg::Point32 p;
+            p.x = point.x;
+            p.y = point.y;
+            p.z = 0;
+            a.shape.points.push_back(p);
+        }
+        for (auto &anchor : agent.anchors)
+        {
+            geometry_msgs::msg::Point32 p;
+            p.x = anchor.x;
+            p.y = anchor.y;
+            p.z = 0;
+            a.anchors.push_back(p);
+        }
+        response->agents.push_back(a);
+    }
+
+}
 
 void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<rmw_request_id_t> request_header,
-    const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request, 
-    std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response)
+                                          const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request,
+                                          std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response)
 {
-    if (request->name_list.size() == 0)
+    
+    for (auto &qname : request->name_list)
     {
-        for (auto &o : world_.obstacles)
+        if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
         {
-            geometry_msgs::msg::Pose pose;
-            pose.position.x = o.pose.x;
-            pose.position.y = o.pose.y;
-            pose.position.z = 0;
-            pose.orientation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0, 0, 1), o.pose.theta));
-            response->pose_list.push_back(pose);
+            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
+            response->pose_list.clear();
+            return;
         }
-    }
-    else
-    {
-        for (auto &qname : request->name_list)
-        {
-            if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
-            {
-                RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
-                response->pose_list.clear();
-                return;
-            }
-            response->pose_list.push_back(uv_opt_poses_[qname]);
-        }
+        response->pose_list.push_back(uv_opt_poses_[qname]);
     }
 }
 

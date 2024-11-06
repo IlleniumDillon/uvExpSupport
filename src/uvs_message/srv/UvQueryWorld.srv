@@ -1,0 +1,6 @@
+---
+string world_name
+uvs_message/DscpGround ground
+uvs_message/DscpAgent[] agents
+uvs_message/DscpCargo[] cargos
+uvs_message/DscpObstacle[] obstacles
