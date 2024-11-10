@@ -43,41 +43,51 @@
             [-block_w*6,block_w*8]
         ]}"
         origin="${[0,0]}"
-        resolutionX="0.05"
-        resolutionY="0.05"
+        resolutionX="0.025"
+        resolutionY="0.025"
     />
-
+    <!-- 长 34.7 宽 23.8 -->
     <xacro:defineAgent 
         name="uv05"
         vertex="${
-            [0,0],
-            [1,0],
-            [1,1],
-            [0,1]
+            [-0.238/2,-0.34/2],
+            [-0.238/2,0.34/2],
+            [0.238/2,0.34/2],
+            [0.238/2,-0.34/2]
         }"
-        anchor="${
-            [0,0],
-            [1,0],
-            [1,1],
-            [0,1]
-        }"
+        anchor="${[
+            [0,0.238/2]
+        ]}"
         initpose="${[0,0,0]}"
         limit_speed="${[1,0,1,0]}"
     />
 
-    <xacro:putDefaultCargo name="cargo1" initpose="${[0,0,0]}"/>
+    <xacro:putDefaultCargo name="c1" initpose="${[0,0,0]}"/>
+    <xacro:putDefaultCargo name="c2" initpose="${[0,0,0]}"/>
+    <xacro:putDefaultCargo name="c3" initpose="${[0,0,0]}"/>
+    <xacro:putDefaultCargo name="c4" initpose="${[0,0,0]}"/>
 
-    <xacro:putDefaultObstacle pose="${[-3.19,0.29,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-2.61,0.29,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-2.03,0.29,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-1.45,0.29,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-0.87,0.29,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-0.29,0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[0.87,2.61,0]}"/>
+    <xacro:putDefaultObstacle pose="${[2.03,0.87,0]}"/>
     <xacro:putDefaultObstacle pose="${[-0.29,0.87,0]}"/>
     <xacro:putDefaultObstacle pose="${[-0.29,1.45,0]}"/>
     <xacro:putDefaultObstacle pose="${[-0.29,2.03,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-0.29,2.61,0]}"/>
-    <xacro:putDefaultObstacle pose="${[1.45,-2.03,0]}"/>
-    <xacro:putDefaultObstacle pose="${[-1.45,-1.45,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,3.19,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,3.77,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,4.35,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.87,0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-1.45,0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-2.03,0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-2.61,0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-3.19,0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.29,-0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[0.29,-0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[0.87,-0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[2.03,-0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[2.61,-0.29,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-0.87,-0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-1.45,-0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-2.61,-0.87,0]}"/>
+    <xacro:putDefaultObstacle pose="${[-3.19,-1.45,0]}"/>
 
 </world>

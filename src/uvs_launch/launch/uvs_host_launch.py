@@ -24,7 +24,7 @@ def generate_launch_description():
     mapserver_package_share_dir = get_package_share_directory('uvs_mapserver')
     
     LocalIPv4Addr = DeclareLaunchArgument(
-        "LocalIPv4Addr",default_value=TextSubstitution(text='192.168.50.101')
+        "LocalIPv4Addr",default_value=TextSubstitution(text='192.168.50.114')
     )
     ServerIPv4Addr = DeclareLaunchArgument(
         "ServerIPv4Addr",default_value=TextSubstitution(text='192.168.50.194')

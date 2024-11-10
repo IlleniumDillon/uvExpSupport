@@ -70,7 +70,7 @@ UVSMapServer::UVSMapServer()
         std::bind(&UVSMapServer::uvQueryElementCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     uv_query_map_service_ = create_service<uvs_message::srv::UvQueryMap>("uv_query_map",
         std::bind(&UVSMapServer::uvQueryMapCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    uv_opt_pose_list_sub_ = create_subscription<uvs_message::msg::UvOptPoseList>("uv_opt_pose_list",
+    uv_opt_pose_list_sub_ = create_subscription<uvs_message::msg::UvOptPoseList>("uvs_pose_list",
         10, std::bind(&UVSMapServer::uvOptPoseListCallback, this, std::placeholders::_1));
 
     map_static_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("map", 10);
@@ -183,7 +183,7 @@ void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<rmw_request_id_t
     {
         if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
         {
-            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
+            // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
             response->pose_list.clear();
             return;
         }
@@ -197,7 +197,7 @@ void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> re
 {
     if (request->name != world_.name)
     {
-        RCLCPP_ERROR(get_logger(), "Failed to find world: %s", request->name.c_str());
+        // RCLCPP_ERROR(get_logger(), "Failed to find world: %s", request->name.c_str());
         return;
     }
     map_static_.header.stamp = now();
@@ -207,7 +207,7 @@ void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> re
         auto it_pose_opt = uv_opt_poses_.find(fps.first);
         if (it_pose_opt == uv_opt_poses_.end())
         {
-            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
+            // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
             continue;
         }
         geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
@@ -230,7 +230,7 @@ void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> re
 
 void UVSMapServer::uvOptPoseListCallback(const uvs_message::msg::UvOptPoseList::SharedPtr msg)
 {
-    uv_opt_poses_.clear();
+    // uv_opt_poses_.clear();
 
     for (auto &uv_opt_pose : msg->pose_list)
     {
@@ -247,7 +247,7 @@ void UVSMapServer::timerCallback()
         auto it_pose_opt = uv_opt_poses_.find(fps.first);
         if (it_pose_opt == uv_opt_poses_.end())
         {
-            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
+            // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
             continue;
         }
         geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
@@ -270,7 +270,7 @@ void UVSMapServer::timerCallback()
         auto it_pose_opt = uv_opt_poses_.find(a.name);
         if (it_pose_opt == uv_opt_poses_.end())
         {
-            RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", a.name.c_str());
+            // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", a.name.c_str());
             continue;
         }
         geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
