@@ -82,16 +82,19 @@ UvEmbMaster::UvEmbMaster()
 UvEmbMaster::~UvEmbMaster()
 {
     upFlag = false;
-    futTx.wait();
+    if (futTx.valid())
+        futTx.wait();
     // futRx.wait();
 }
 
-void UvEmbMaster::init()
+bool UvEmbMaster::init()
 {
-    while(!drv->init())
+    while(rclcpp::ok())
     {
+        if (drv->init()) return true;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    return false;
 }
 
 void UvEmbMaster::start()

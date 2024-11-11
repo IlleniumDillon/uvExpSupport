@@ -5,7 +5,12 @@ int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
     auto nh = std::make_shared<UvEmbMaster>();
-    nh->init();
+    if (!nh->init())
+    {
+        RCLCPP_ERROR(nh->get_logger(), "Failed to initialize USB driver");
+        rclcpp::shutdown();
+        return 1;
+    }
     nh->start();
     while (rclcpp::ok())
     {

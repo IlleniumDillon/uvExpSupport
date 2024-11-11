@@ -1,6 +1,6 @@
 #include "uvs_embusb.hpp"
 
-#include "libusb.h"
+#include "libusb-1.0/libusb.h"
 
 #include <rclcpp/rclcpp.hpp>
 

@@ -24,10 +24,11 @@ FIND_PACKAGES(
   Boost
   Threads
   uvs_message
+  uvs_tools
 )
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/libusb
+  # ${CMAKE_CURRENT_SOURCE_DIR}/libusb
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include/uvs_embmaster
   ${CMAKE_CURRENT_SOURCE_DIR}/include/protocol
@@ -39,16 +40,16 @@ file (GLOB UVS_EMBMASTER_SOURCE "src/*.cpp" "src/*.c")
 BUILD_EXEC(
   TARGET uvs_embmaster
   SOURCES ${UVS_EMBMASTER_SOURCE}
-  DEPENDENCIES rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message Boost Threads
+  DEPENDENCIES rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message Boost Threads uvs_tools
 )
 
-target_link_directories(uvs_embmaster PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libusb)
+# target_link_directories(uvs_embmaster PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libusb)
 target_link_libraries(uvs_embmaster usb-1.0)
 
-install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libusb/ 
-  DESTINATION lib
-)
+# install(
+#   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libusb/ 
+#   DESTINATION lib
+# )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

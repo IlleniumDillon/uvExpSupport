@@ -26,25 +26,48 @@ FIND_PACKAGES(
   trajectory_msgs
   uvs_message
   OpenCV
+  Eigen3
 )
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/include/uvs_tools
-  ${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/include
-  ${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2
+  ${CMAKE_SOURCE_DIR}/thirdparty/include
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/json
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/osqp
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/qdldl
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/libusb-1.0
 )
 
 file (GLOB UVS_TOOLS_SRC_FILES
-  "${CMAKE_SOURCE_DIR}/src/*.cpp"
-  "${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/src/lib_json/*.cpp"
-  "${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2/*.cpp"
+  ${CMAKE_SOURCE_DIR}/src/*.cpp
 )
 
 BUILD_LIB(
   TARGET uvs_tools
   SOURCES ${UVS_TOOLS_SRC_FILES}
-  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message OpenCV
+  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message OpenCV Eigen3
+)
+
+target_link_directories(uvs_tools PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/lib)
+target_link_libraries(uvs_tools jsoncpp osqp qdldl tinyxml2)
+
+install(
+  DIRECTORY 
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/json
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/osqp
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/qdldl
+  ${CMAKE_SOURCE_DIR}/thirdparty/include/libusb-1.0
+  DESTINATION 
+  include
+)
+install(FILES ${CMAKE_SOURCE_DIR}/thirdparty/include/tinyxml2.h DESTINATION include)
+FILE (GLOB INSTALL_LIB ${CMAKE_SOURCE_DIR}/thirdparty/lib/*.so)
+install(
+  FILES 
+  ${INSTALL_LIB}
+  DESTINATION 
+  lib
 )
 
 if(BUILD_TESTING)

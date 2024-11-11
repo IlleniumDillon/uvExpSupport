@@ -31,15 +31,13 @@ FIND_PACKAGES(
 include_directories(
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/include/uvs_mapserver
-  ${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/include
-  ${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2
+
 )
 
 file (GLOB UVS_MAPSERVER_SRC_FILES
   "${CMAKE_SOURCE_DIR}/src/uvs_mapserver.cpp"
   "${CMAKE_SOURCE_DIR}/src/uvs_mapserver_main.cpp"
-  "${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/src/lib_json/*.cpp"
-  "${CMAKE_SOURCE_DIR}/thirdparty/tinyxml2/*.cpp"
+
 )
 
 BUILD_EXEC(

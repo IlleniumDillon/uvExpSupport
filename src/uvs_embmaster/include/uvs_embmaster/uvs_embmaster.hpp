@@ -52,7 +52,7 @@ public:
      * 
      * This function initializes the USB driver, and try to connect to the embedded system.
      */
-    void init();
+    bool init();
 
     /**
      * @brief Start the communication with the embedded system.
