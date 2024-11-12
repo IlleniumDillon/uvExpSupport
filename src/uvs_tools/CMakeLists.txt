@@ -24,7 +24,6 @@ FIND_PACKAGES(
   tf2_geometry_msgs
   tf2_ros
   trajectory_msgs
-  uvs_message
   OpenCV
   Eigen3
 )
@@ -41,12 +40,14 @@ include_directories(
 
 file (GLOB UVS_TOOLS_SRC_FILES
   ${CMAKE_SOURCE_DIR}/src/*.cpp
+  ${CMAKE_SOURCE_DIR}/src/ctrl/*.cpp
+  # ${CMAKE_SOURCE_DIR}/src/graph_search/*.cpp
 )
 
 BUILD_LIB(
   TARGET uvs_tools
   SOURCES ${UVS_TOOLS_SRC_FILES}
-  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message OpenCV Eigen3
+  DEPENDENCIES nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs OpenCV Eigen3
 )
 
 target_link_directories(uvs_tools PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/lib)

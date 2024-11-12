@@ -1,4 +1,4 @@
-#include "mpc.hpp"
+#include "ctrl/mpc.hpp"
 #include "unsupported/Eigen/KroneckerProduct"
 
 MPC::MPC(int N, double dT, double maxWheelSpeed, double wheelWidth, Eigen::MatrixXd Q, Eigen::MatrixXd R, Eigen::MatrixXd Qf)

@@ -24,8 +24,8 @@ FIND_PACKAGES(
   tf2_geometry_msgs
   tf2_ros
   trajectory_msgs
-  uvs_message
   uvs_tools
+  uvs_message
 )
 
 include_directories(
@@ -43,7 +43,7 @@ file (GLOB UVS_MAPSERVER_SRC_FILES
 BUILD_EXEC(
   TARGET uvs_mapserver
   SOURCES ${UVS_MAPSERVER_SRC_FILES}
-  DEPENDENCIES rclcpp gazebo_dev gazebo_msgs gazebo_ros geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message uvs_tools
+  DEPENDENCIES rclcpp gazebo_dev gazebo_msgs gazebo_ros geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_tools uvs_message
 )
 
 BUILD_EXEC(

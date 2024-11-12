@@ -23,8 +23,8 @@ FIND_PACKAGES(
   trajectory_msgs
   Boost
   Threads
-  uvs_message
   uvs_tools
+  uvs_message
 )
 
 include_directories(
@@ -40,7 +40,7 @@ file (GLOB UVS_EMBMASTER_SOURCE "src/*.cpp" "src/*.c")
 BUILD_EXEC(
   TARGET uvs_embmaster
   SOURCES ${UVS_EMBMASTER_SOURCE}
-  DEPENDENCIES rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message Boost Threads uvs_tools
+  DEPENDENCIES rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs Boost Threads uvs_tools uvs_message
 )
 
 # target_link_directories(uvs_embmaster PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libusb)
