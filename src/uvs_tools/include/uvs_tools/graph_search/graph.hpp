@@ -123,6 +123,10 @@ public:
             delete nodes[i];
         }
         constructGraph(other.size, other.resolution, other.origin);
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            *nodes[i] = *other.nodes[i];
+        }
     }
     GridGraph(const GridGraph &other)
     {
@@ -131,6 +135,10 @@ public:
             delete nodes[i];
         }
         constructGraph(other.size, other.resolution, other.origin);
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            *nodes[i] = *other.nodes[i];
+        }
     }
     GridGraph& operator=(GridGraph &other)
     {
@@ -139,6 +147,10 @@ public:
             delete nodes[i];
         }
         constructGraph(other.size, other.resolution, other.origin);
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            *nodes[i] = *other.nodes[i];
+        }
         return *this;
     }
 

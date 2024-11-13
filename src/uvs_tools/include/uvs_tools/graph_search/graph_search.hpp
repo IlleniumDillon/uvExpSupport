@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <chrono>
 
-#include "graph_search/graph.hpp"
+#include "uvs_tools/graph_search/graph.hpp"
 
 template <typename TraceType>
 class GraphSearchResultBase
@@ -47,8 +47,9 @@ public:
 template <typename GraphType, typename NodeType, typename ResultType>
 inline ResultType GraphSearchBase<GraphType, NodeType, ResultType>::search(NodeType *start, NodeType *goal)
 {
-    auto start_time = std::chrono::high_resolution_clock::now();
     reset();
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
     start->g = GraphNodeCost(0, 0);
     start->h = heuristic(start, goal);
     start->f = start->g + start->h;
@@ -58,7 +59,7 @@ inline ResultType GraphSearchBase<GraphType, NodeType, ResultType>::search(NodeT
     {
         result.iterations++;
         auto current = (NodeType*)openSet.begin()->second;
-        std::cout << "current: " << current->index << std::endl;
+        // std::cout << "current: " << current->index << std::endl;
 
         if (*current == *goal)
         {
@@ -82,10 +83,10 @@ inline ResultType GraphSearchBase<GraphType, NodeType, ResultType>::search(NodeT
         for (int i = 0; i < neighbors.size(); i++)
         {
             auto neighbor = neighbors[i];
-            if (neighbor->flag == IN_CLOSESET)
-            {
-                continue;
-            }
+            // if (neighbor->flag == IN_CLOSESET)
+            // {
+            //     continue;
+            // }
             GraphNodeCost tentative_g = current->g + costs[i];
             if (neighbor->flag != IN_OPENSET)
             {

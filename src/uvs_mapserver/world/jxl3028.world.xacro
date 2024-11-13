@@ -8,7 +8,7 @@
     <!-- 一格0.58米 箱子0.455米 -->
     <!-- 车宽0.238 长 0.34 -->
     <xacro:property name="block_w" value="0.58"/>
-    <xacro:property name="cargo_w" value="0.455"/>
+    <xacro:property name="cargo_w" value="1"/>
 
     <xacro:macro name="putDefaultCargo" params="name initpose">
         <xacro:defineCargo 
@@ -43,8 +43,8 @@
             [-block_w*6,block_w*8]
         ]}"
         origin="${[0,0]}"
-        resolutionX="0.025"
-        resolutionY="0.025"
+        resolutionX="0.05"
+        resolutionY="0.05"
     />
     <!-- 长 34.7 宽 23.8 -->
     <xacro:defineAgent 
