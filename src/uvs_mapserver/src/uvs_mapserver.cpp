@@ -54,6 +54,10 @@ UVSMapServer::UVSMapServer()
         std::vector<Point2I> polygon_obstacle = getFootprint(obstacle.footprint, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(min_x, min_y));
         for (auto &point : polygon_obstacle)
         {
+            if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height)
+            {
+                continue;
+            }
             map_static_.data[point.y * width + point.x] = 100;
         }
     }

@@ -35,7 +35,8 @@ public:
     virtual void reset() = 0;
     virtual GraphNodeCost heuristic(NodeType* node1, NodeType* node2) = 0;
     virtual void getNeighbors(NodeType* node, std::vector<NodeType*>& neighbors, std::vector<GraphNodeCost>& costs) = 0;
-
+    
+    virtual bool endSearch(NodeType* node1, NodeType* node2) {return *node1 == *node2;};
     virtual ResultType search(NodeType* start, NodeType* goal);
 public:
     GraphType graph;
@@ -61,7 +62,7 @@ inline ResultType GraphSearchBase<GraphType, NodeType, ResultType>::search(NodeT
         auto current = (NodeType*)openSet.begin()->second;
         // std::cout << "current: " << current->index << std::endl;
 
-        if (*current == *goal)
+        if (endSearch(current, goal))
         {
             result.success = true;
             result.cost = current->g.distance;
