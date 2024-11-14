@@ -63,6 +63,22 @@ def generate_launch_description():
     )
     
     ld.add_action(
+        Node(
+            package='uve_mapclient',
+            executable='uve_mapclient',
+            output='screen'
+        )
+    )
+    
+    ld.add_action(
+        Node(
+            package='uve_plan',
+            executable='uve_plan_hybrid_astar_test',
+            output='screen'
+        )
+    )
+    
+    ld.add_action(
         ExecuteProcess(
             cmd=["rviz2", "-d", os.path.join(package_share_dir, "rviz", "default.rviz")],
             output='screen'
