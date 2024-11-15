@@ -159,6 +159,14 @@ bool MPC::update(const Eigen::VectorXd &state, Eigen::VectorXd &control)
         x_err_ref(i) = x_dummy(i) - x_dummy(0);
         y_err_ref(i) = y_dummy(i) - y_dummy(0);
         theta_err_ref(i) = theta_dummy(i) - theta_dummy(0);
+        if (theta_err_ref(i) > M_PI)
+        {
+            theta_err_ref(i) -= 2 * M_PI;
+        }
+        if (theta_err_ref(i) < -M_PI)
+        {
+            theta_err_ref(i) += 2 * M_PI;
+        }
     }
 
     /// update osqp data
