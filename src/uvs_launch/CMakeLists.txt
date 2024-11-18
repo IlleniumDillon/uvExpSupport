@@ -30,6 +30,7 @@ FIND_PACKAGES(
 INSTALL_DIR(
   launch 
   rviz
+  config
 )
 
 if(BUILD_TESTING)

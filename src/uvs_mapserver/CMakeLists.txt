@@ -56,7 +56,7 @@ set(WORLDXACROFILE ${CMAKE_SOURCE_DIR}/world/jxl3028.world.xacro)
 GEN_XACRO(${WORLDXACROFILE})
 
 install(
-  DIRECTORY models world
+  DIRECTORY models world config launch
   DESTINATION share/${PROJECT_NAME}
 )
 

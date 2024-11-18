@@ -1,0 +1,7 @@
+/uvs_mapserver:
+  ros__parameters:
+    world_name: "jxl3028"
+/uvs_optitrack:
+  ros__parameters:
+    LocalIPv4Addr: "192.168.50.114"
+    ServerIPv4Addr: "192.168.50.194"

@@ -20,36 +20,33 @@ from launch.substitutions import (EnvironmentVariable, FindExecutable,
 def generate_launch_description():
     package_name = 'uvs_launch'
     package_share_dir = get_package_share_directory(package_name)
+        
+    # LocalIPv4Addr = DeclareLaunchArgument(
+    #     "LocalIPv4Addr",default_value=TextSubstitution(text='192.168.50.114')
+    # )
+    # ServerIPv4Addr = DeclareLaunchArgument(
+    #     "ServerIPv4Addr",default_value=TextSubstitution(text='192.168.50.194')
+    # )
+    # WorldName = DeclareLaunchArgument(
+    #     "WorldName",default_value=TextSubstitution(text='jxl3028')
+    # )
     
-    mapserver_package_share_dir = get_package_share_directory('uvs_mapserver')
-    
-    LocalIPv4Addr = DeclareLaunchArgument(
-        "LocalIPv4Addr",default_value=TextSubstitution(text='192.168.50.114')
-    )
-    ServerIPv4Addr = DeclareLaunchArgument(
-        "ServerIPv4Addr",default_value=TextSubstitution(text='192.168.50.194')
-    )
-    WorldName = DeclareLaunchArgument(
-        "WorldName",default_value=TextSubstitution(text='jxl3028')
-    )
+    config = os.path.join(package_share_dir, 'config', 'launch_host.yaml')
     
     ld = LaunchDescription()
     
-    ld.add_action(LocalIPv4Addr)
+    # ld.add_action(LocalIPv4Addr)
     
-    ld.add_action(ServerIPv4Addr)
+    # ld.add_action(ServerIPv4Addr)
     
-    ld.add_action(WorldName)
+    # ld.add_action(WorldName)
     
     ld.add_action(
         Node(
             package="uvs_optitrack",
             executable="uvs_optitrack",
             output='screen',
-            parameters=[{
-                "LocalIPv4Addr": LaunchConfiguration("LocalIPv4Addr"),
-                "ServerIPv4Addr": LaunchConfiguration("ServerIPv4Addr")
-            }]
+            parameters=[config]
         )
     )
     
@@ -58,7 +55,7 @@ def generate_launch_description():
             package='uvs_mapserver',
             executable='uvs_mapserver',
             output='screen',
-            parameters=[{"WorldName": LaunchConfiguration("WorldName")}]
+            parameters=[config]
         )
     )
     
