@@ -79,9 +79,17 @@ void UvsManualJoystick::timer_callback()
         {
             emag_msg.enable = 1;
         }
-
-        arm_publisher->publish(arm_msg);      
-        emag_publisher->publish(emag_msg);
+        
+        if (arm_msg_prev.arm_base != arm_msg.arm_base || arm_msg_prev.arm_arm != arm_msg.arm_arm)
+        {
+            arm_publisher->publish(arm_msg);
+        }
+        arm_msg_prev = arm_msg;
+        if (emag_msg_prev.enable != emag_msg.enable)
+        {
+            emag_publisher->publish(emag_msg);
+        }
+        emag_msg_prev = emag_msg;
         kinetics_publisher->publish(kinetics_msg);
     }
 }

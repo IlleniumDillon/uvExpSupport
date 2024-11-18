@@ -36,6 +36,9 @@ private:
     JoystickMap joystickEvent;
 
     bool getFeedback = false;
+
+    uvs_message::msg::UvEmbArm arm_msg_prev;
+    uvs_message::msg::UvEmbEmag emag_msg_prev;
 };
 
 #endif // UVS_MANUAL_JOYSTICK_HPP
