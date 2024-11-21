@@ -22,15 +22,15 @@ private:
         const std::shared_ptr<uvs_message::srv::UvQueryWorld::Request> request,
         std::shared_ptr<uvs_message::srv::UvQueryWorld::Response> response);
         
-    void uvQueryElementCallback(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request,
-        std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response);
+    // void uvQueryElementCallback(
+    //     const std::shared_ptr<rmw_request_id_t> request_header,
+    //     const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request,
+    //     std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response);
 
-    void uvQueryMapCallback(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<uvs_message::srv::UvQueryMap::Request> request,
-        std::shared_ptr<uvs_message::srv::UvQueryMap::Response> response);
+    // void uvQueryMapCallback(
+    //     const std::shared_ptr<rmw_request_id_t> request_header,
+    //     const std::shared_ptr<uvs_message::srv::UvQueryMap::Request> request,
+    //     std::shared_ptr<uvs_message::srv::UvQueryMap::Response> response);
 
     void uvOptPoseListCallback(const uvs_message::msg::UvOptPoseList::SharedPtr msg);
 
@@ -39,8 +39,8 @@ private:
     std::vector<Point2I> getFootprint(const Polygon2D &shape, const double& resolutionX, const double& resolutionY, const Point2D &origin);
 
 private:
-    rclcpp::Service<uvs_message::srv::UvQueryElement>::SharedPtr uv_query_element_service_;
-    rclcpp::Service<uvs_message::srv::UvQueryMap>::SharedPtr uv_query_map_service_;
+    // rclcpp::Service<uvs_message::srv::UvQueryElement>::SharedPtr uv_query_element_service_;
+    // rclcpp::Service<uvs_message::srv::UvQueryMap>::SharedPtr uv_query_map_service_;
     rclcpp::Service<uvs_message::srv::UvQueryWorld>::SharedPtr uv_query_world_service_;
     rclcpp::Subscription<uvs_message::msg::UvOptPoseList>::SharedPtr uv_opt_pose_list_sub_;
     /// test

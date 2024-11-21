@@ -68,12 +68,12 @@ UVSMapServer::UVSMapServer()
         cargo_shape_[cargo.name] = std::make_pair(cargo.shape, std::vector<Point2I>());
     }
 
-    uv_query_world_service_ = create_service<uvs_message::srv::UvQueryWorld>("uv_query_world", 
+    uv_query_world_service_ = create_service<uvs_message::srv::UvQueryWorld>("uvs_query_world", 
         std::bind(&UVSMapServer::uvQueryWorldCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    uv_query_element_service_ = create_service<uvs_message::srv::UvQueryElement>("uv_query_element", 
-        std::bind(&UVSMapServer::uvQueryElementCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    uv_query_map_service_ = create_service<uvs_message::srv::UvQueryMap>("uv_query_map",
-        std::bind(&UVSMapServer::uvQueryMapCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    // uv_query_element_service_ = create_service<uvs_message::srv::UvQueryElement>("uv_query_element", 
+    //     std::bind(&UVSMapServer::uvQueryElementCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    // uv_query_map_service_ = create_service<uvs_message::srv::UvQueryMap>("uv_query_map",
+    //     std::bind(&UVSMapServer::uvQueryMapCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     uv_opt_pose_list_sub_ = create_subscription<uvs_message::msg::UvOptPoseList>("uvs_pose_list",
         10, std::bind(&UVSMapServer::uvOptPoseListCallback, this, std::placeholders::_1));
 
@@ -178,59 +178,59 @@ void UVSMapServer::uvQueryWorldCallback(const std::shared_ptr<rmw_request_id_t> 
 
 }
 
-void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<rmw_request_id_t> request_header,
-                                          const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request,
-                                          std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response)
-{
+// void UVSMapServer::uvQueryElementCallback(const std::shared_ptr<rmw_request_id_t> request_header,
+//                                           const std::shared_ptr<uvs_message::srv::UvQueryElement::Request> request,
+//                                           std::shared_ptr<uvs_message::srv::UvQueryElement::Response> response)
+// {
     
-    for (auto &qname : request->name_list)
-    {
-        if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
-        {
-            // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
-            response->pose_list.clear();
-            return;
-        }
-        response->pose_list.push_back(uv_opt_poses_[qname]);
-    }
-}
+//     for (auto &qname : request->name_list)
+//     {
+//         if (uv_opt_poses_.find(qname) == uv_opt_poses_.end())
+//         {
+//             // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", qname.c_str());
+//             response->pose_list.clear();
+//             return;
+//         }
+//         response->pose_list.push_back(uv_opt_poses_[qname]);
+//     }
+// }
 
-void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> request_header,
-    const std::shared_ptr<uvs_message::srv::UvQueryMap::Request> request, 
-    std::shared_ptr<uvs_message::srv::UvQueryMap::Response> response)
-{
-    if (request->name != world_.name)
-    {
-        // RCLCPP_ERROR(get_logger(), "Failed to find world: %s", request->name.c_str());
-        return;
-    }
-    map_static_.header.stamp = now();
-    response->map = map_static_;
-    for (auto &fps : cargo_shape_)
-    {
-        auto it_pose_opt = uv_opt_poses_.find(fps.first);
-        if (it_pose_opt == uv_opt_poses_.end())
-        {
-            // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
-            continue;
-        }
-        geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
-        Pose2D pose(pose_opt.position.x, pose_opt.position.y, tf2::getYaw(pose_opt.orientation));
+// void UVSMapServer::uvQueryMapCallback(const std::shared_ptr<rmw_request_id_t> request_header,
+//     const std::shared_ptr<uvs_message::srv::UvQueryMap::Request> request, 
+//     std::shared_ptr<uvs_message::srv::UvQueryMap::Response> response)
+// {
+//     if (request->name != world_.name)
+//     {
+//         // RCLCPP_ERROR(get_logger(), "Failed to find world: %s", request->name.c_str());
+//         return;
+//     }
+//     map_static_.header.stamp = now();
+//     response->map = map_static_;
+//     for (auto &fps : cargo_shape_)
+//     {
+//         auto it_pose_opt = uv_opt_poses_.find(fps.first);
+//         if (it_pose_opt == uv_opt_poses_.end())
+//         {
+//             // RCLCPP_ERROR(get_logger(), "Failed to find uv_opt_pose: %s", fps.first.c_str());
+//             continue;
+//         }
+//         geometry_msgs::msg::Pose pose_opt = it_pose_opt->second;
+//         Pose2D pose(pose_opt.position.x, pose_opt.position.y, tf2::getYaw(pose_opt.orientation));
 
-        auto& fp = fps.second;
-        // for (auto& point : fp.second)
-        // {
-        //     response->map.data[point.y * map_static_.info.width + point.x] = 0;
-        // }
-        Polygon2D temp = fp.first.transform(pose);
-        fp.second = getFootprint(temp, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(map_static_.info.origin.position.x, map_static_.info.origin.position.y));
-        for (auto& point : fp.second)
-        {
-            response->map.data[point.y * map_static_.info.width + point.x] = 75;
-        }
+//         auto& fp = fps.second;
+//         // for (auto& point : fp.second)
+//         // {
+//         //     response->map.data[point.y * map_static_.info.width + point.x] = 0;
+//         // }
+//         Polygon2D temp = fp.first.transform(pose);
+//         fp.second = getFootprint(temp, world_.ground.resolutionX, world_.ground.resolutionY, Point2D(map_static_.info.origin.position.x, map_static_.info.origin.position.y));
+//         for (auto& point : fp.second)
+//         {
+//             response->map.data[point.y * map_static_.info.width + point.x] = 75;
+//         }
 
-    }
-}
+//     }
+// }
 
 void UVSMapServer::uvOptPoseListCallback(const uvs_message::msg::UvOptPoseList::SharedPtr msg)
 {
