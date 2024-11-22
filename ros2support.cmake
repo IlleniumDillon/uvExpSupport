@@ -131,7 +131,7 @@ endmacro()
 
 macro(GEN_MESSAGE )
     set(options)
-    set(oneValueArgs)
+    set(oneValueArgs TARGET) 
     set(multiValueArgs MESSAGES DEPENDENCIES)
     cmake_parse_arguments(GENMESSAGE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -141,8 +141,12 @@ macro(GEN_MESSAGE )
         list(APPEND RELATIVEMESSAGE_PATH ${RELATIVE_PATH})
     endforeach()
     
+    if(NOT GENMESSAGE_TARGET)
+        set(GENMESSAGE_TARGET ${PROJECT_NAME})
+    endif()
+
     message(NOTICE "Generating messages: ${RELATIVEMESSAGE_PATH}")
-    rosidl_generate_interfaces(${PROJECT_NAME}
+    rosidl_generate_interfaces(${GENMESSAGE_TARGET}
         ${RELATIVEMESSAGE_PATH}
         DEPENDENCIES ${GENMESSAGE_DEPENDENCIES})
     
