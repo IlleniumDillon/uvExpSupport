@@ -63,7 +63,7 @@ install(
   include
 )
 install(FILES ${CMAKE_SOURCE_DIR}/thirdparty/include/tinyxml2.h DESTINATION include)
-FILE (GLOB INSTALL_LIB ${CMAKE_SOURCE_DIR}/thirdparty/lib/*.so)
+FILE (GLOB INSTALL_LIB ${CMAKE_SOURCE_DIR}/thirdparty/lib/*.*)
 install(
   FILES 
   ${INSTALL_LIB}
