@@ -9,6 +9,29 @@ MPC::MPC(int N, double dT, double maxWheelSpeed, double wheelWidth, Eigen::Matri
     this->R = R;
     this->Qf = Qf;
 
+    // check if dummy data is needed
+    x_dummy = Eigen::VectorXd::Zero(N);
+    y_dummy = Eigen::VectorXd::Zero(N);
+    theta_dummy = Eigen::VectorXd::Zero(N);
+    v_dummy = Eigen::VectorXd::Zero(N);
+    w_dummy = Eigen::VectorXd::Zero(N);
+
+    x_err_ref = Eigen::VectorXd::Zero(N);
+    y_err_ref = Eigen::VectorXd::Zero(N);
+    theta_err_ref = Eigen::VectorXd::Zero(N);
+
+    A_hat = Eigen::MatrixXd::Zero(3, 3);
+    B_hat = Eigen::MatrixXd::Zero(3, 2);
+
+    A_ba = Eigen::MatrixXd::Zero(N*3, 3);
+    B_ba = Eigen::MatrixXd::Zero(N*3, 2*N);
+
+    // i=0 : A_hat^0
+    for (int i = 0; i < N+1; i++)
+    {
+        A_hat_power.push_back(Eigen::MatrixXd::Identity(3, 3));
+    }
+
     data = (OSQPData *)c_malloc(sizeof(OSQPData));
     if (data == nullptr)
     {
@@ -132,16 +155,7 @@ bool MPC::update(const Eigen::VectorXd &state, Eigen::VectorXd &control)
         control = Eigen::VectorXd::Zero(2);
         return false;
     }
-    // check if dummy data is needed
-    x_dummy = Eigen::VectorXd::Zero(N);
-    y_dummy = Eigen::VectorXd::Zero(N);
-    theta_dummy = Eigen::VectorXd::Zero(N);
-    v_dummy = Eigen::VectorXd::Zero(N);
-    w_dummy = Eigen::VectorXd::Zero(N);
-
-    x_err_ref = Eigen::VectorXd::Zero(N);
-    y_err_ref = Eigen::VectorXd::Zero(N);
-    theta_err_ref = Eigen::VectorXd::Zero(N);
+    
     
     for (int i = 0; i < N; i++)
     {
@@ -210,23 +224,22 @@ void MPC::abort()
 
 void MPC::setup(const Eigen::VectorXd &state)
 {
-    Eigen::MatrixXd A_hat = Eigen::MatrixXd::Zero(3, 3);
+    
     A_hat   <<  1, 0, -state(3) * dT * sin(state(2)),
                 0, 1, state(3) * dT * cos(state(2)),
                 0, 0, 1;
-    Eigen::MatrixXd B_hat = Eigen::MatrixXd::Zero(3, 2);
+    
     B_hat   <<  dT * cos(state(2)), 0,
                 dT * sin(state(2)), 0,
                 0, dT;
-    std::vector<Eigen::MatrixXd> A_hat_power;
-    A_hat_power.push_back(Eigen::MatrixXd::Identity(3, 3)); // A_hat^0
+    
+    // A_hat_power.push_back(Eigen::MatrixXd::Identity(3, 3)); // A_hat^0
     for (int i = 1; i < N+1; i++)
     {
-        A_hat_power.push_back(A_hat_power[i-1] * A_hat);
+        A_hat_power.at(1) = (A_hat_power[i-1] * A_hat);
     }
 
-    Eigen::MatrixXd A_ba = Eigen::MatrixXd::Zero(N*3, 3);
-    Eigen::MatrixXd B_ba = Eigen::MatrixXd::Zero(N*3, 2*N);
+    
 
     for (int i = 0; i < N; i++)
     {
