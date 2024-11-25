@@ -1,5 +1,4 @@
-#ifndef MPC_HPP
-#define MPC_HPP
+#pragma once
 
 // Include necessary libraries
 #include <vector>
@@ -40,6 +39,12 @@ public:
     Eigen::MatrixXd R;  //2,2
     Eigen::MatrixXd Qf; //3,3
 
+    Eigen::MatrixXd A_hat; //3,3
+    Eigen::MatrixXd B_hat; //3,2
+    Eigen::MatrixXd A_ba;  //3N,3
+    Eigen::MatrixXd B_ba;  //3N,2N
+    std::vector<Eigen::MatrixXd> A_hat_power;
+
     Eigen::VectorXd x_ref;
     Eigen::VectorXd y_ref;
     Eigen::VectorXd theta_ref;
@@ -66,6 +71,7 @@ public:
         const Eigen::MatrixXd& matrix,
         csc *& osqp_matrix
     );
+private:
+    
 };
 
-#endif // MPC_HPP
