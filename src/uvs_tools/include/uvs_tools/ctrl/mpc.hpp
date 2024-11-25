@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MPC_HPP
+#define MPC_HPP
 
 // Include necessary libraries
 #include <vector>
@@ -75,3 +76,4 @@ private:
     
 };
 
+#endif // MPC_HPP
