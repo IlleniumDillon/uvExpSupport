@@ -148,7 +148,7 @@ void MPC::setTrackReference(const Eigen::VectorXd &x,
 
 bool MPC::update(const Eigen::VectorXd &state, Eigen::VectorXd &control)
 {
-    static int waitCount = 0;
+    // static int waitCount = 0;
     // Check if control is enabled
     if (!enableControl)
     {
@@ -194,19 +194,24 @@ bool MPC::update(const Eigen::VectorXd &state, Eigen::VectorXd &control)
     }
     
     // update current iteration
-    waitCount++;
-    if (waitCount >= 1)
+    // waitCount++;
+    // if (waitCount >= 1)
+    // {
+    //     waitCount = 0;
+    //     current_iter++;
+    //     if (current_iter >= x_ref.size())
+    //     {
+    //         enableControl = false;
+    //         current_iter = 0;
+    //         return true;
+    //     }
+    // }
+    current_iter++;
+    if (current_iter >= x_ref.size())
     {
-        waitCount = 0;
-        current_iter++;
-        if (current_iter >= x_ref.size())
-        {
-            enableControl = false;
-            current_iter = 0;
-            return true;
-        }
+        current_iter = x_ref.size() - 1;
+        return true;
     }
-    
     
     return false;
 }
