@@ -62,10 +62,10 @@
         limit_speed="${[1,0,1,0]}"
     />
 
+    <xacro:putDefaultCargo name="c0" initpose="${[0,0,0]}"/>
     <xacro:putDefaultCargo name="c1" initpose="${[0,0,0]}"/>
     <xacro:putDefaultCargo name="c2" initpose="${[0,0,0]}"/>
     <xacro:putDefaultCargo name="c3" initpose="${[0,0,0]}"/>
-    <xacro:putDefaultCargo name="c4" initpose="${[0,0,0]}"/>
 
     <xacro:putDefaultObstacle pose="${[0.87,2.61,0]}"/>
     <xacro:putDefaultObstacle pose="${[2.03,0.87,0]}"/>

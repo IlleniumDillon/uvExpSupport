@@ -275,6 +275,14 @@ void MPC::setup(const Eigen::VectorXd &state)
     e0 << state(0) - x_dummy(0),
           state(1) - y_dummy(0),
           state(2) - theta_dummy(0);
+    if (e0(2) > M_PI)
+    {
+        e0(2) -= 2 * M_PI;
+    }
+    if (e0(2) < -M_PI)
+    {
+        e0(2) += 2 * M_PI;
+    }
     // e0 << state(0), state(1), state(2);
     // std::cout << x_dummy(0) << " " << y_dummy(0) << " " << theta_dummy(0) << std::endl;
     Eigen::MatrixXd sref = Eigen::MatrixXd::Zero(N*3, 1);
