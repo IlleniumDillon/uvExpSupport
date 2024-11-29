@@ -9,6 +9,7 @@
     <!-- 车宽0.238 长 0.34 -->
     <xacro:property name="block_w" value="0.58"/>
     <xacro:property name="cargo_w" value="0.455"/>
+    <xacro:property name="obs_w" value="0.455"/>
 
     <xacro:macro name="putDefaultCargo" params="name initpose">
         <xacro:defineCargo 
@@ -27,10 +28,10 @@
 
     <xacro:macro name="putDefaultObstacle" params="pose">
         <xacro:defineObstacle 
-            vertex="${[[-cargo_w/2,-cargo_w/2],
-            [-cargo_w/2,cargo_w/2],
-            [cargo_w/2,cargo_w/2],
-            [cargo_w/2,-cargo_w/2]]}"
+            vertex="${[[-obs_w/2,-obs_w/2],
+            [-obs_w/2,obs_w/2],
+            [obs_w/2,obs_w/2],
+            [obs_w/2,-obs_w/2]]}"
             pose="${pose}"
         />
     </xacro:macro>
@@ -62,10 +63,10 @@
         limit_speed="${[1,0,1,0]}"
     />
 
-    <xacro:putDefaultCargo name="c0" initpose="${[0,0,0]}"/>
     <xacro:putDefaultCargo name="c1" initpose="${[0,0,0]}"/>
     <xacro:putDefaultCargo name="c2" initpose="${[0,0,0]}"/>
     <xacro:putDefaultCargo name="c3" initpose="${[0,0,0]}"/>
+    <xacro:putDefaultCargo name="c4" initpose="${[0,0,0]}"/>
 
     <xacro:putDefaultObstacle pose="${[0.87,2.61,0]}"/>
     <xacro:putDefaultObstacle pose="${[2.03,0.87,0]}"/>

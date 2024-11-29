@@ -56,6 +56,12 @@ public:
                 qUvRxBur.put(rdatab, std::chrono::milliseconds(1));
             }
         }
+
+        std::vector<uint8_t> data(sizeof(ComSDI_Reg));
+        ComSDI_Reg* pdata = (ComSDI_Reg*)data.data();
+        pdata->linearVel = drift16_from_float(0);
+        pdata->angularVel = drift16_from_float(0);
+        drv->write_regCh((void*)pdata, sizeof(ComSDI_Reg));
     }
 
     std::shared_ptr<UvEmbUsb> drv;
