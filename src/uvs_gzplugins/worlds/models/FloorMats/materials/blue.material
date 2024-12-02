@@ -1,0 +1,13 @@
+material Uvs/blue
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture blue_texture.png
+            }
+        }
+    }
+}

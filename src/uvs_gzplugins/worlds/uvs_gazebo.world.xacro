@@ -1,0 +1,16 @@
+<sdf version='1.7'>
+    <world name='default' xmlns:xacro="http://wiki.ros.org/xacro">
+        <xacro:include filename="models/FloorMats/model.xacro" />
+        <scene>
+            <ambient>0.4 0.4 0.4 1</ambient>
+            <background>0.25 0.25 0.25 1</background>
+            <shadows>false</shadows>
+        </scene>
+        <light type="directional" name="some_light">
+            <diffuse>0.7 0.7 0.7 0</diffuse>
+            <specular>1 1 1 0</specular>
+            <direction>-1 -1 -1</direction>
+        </light>
+        <xacro:putMatMatrix left="10" right="10" up="10" down="10" />
+    </world>
+</sdf>

@@ -1,0 +1,7 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+<xacro:property name="wall_thick" value="0.005" />
+
+<xacro:macro name="putDefaultFence" params="">
+</xacro:macro>
+
+</world>

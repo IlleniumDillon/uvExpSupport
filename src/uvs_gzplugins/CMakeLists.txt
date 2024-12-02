@@ -44,6 +44,9 @@ BUILD_GAZEBO_PLUGIN(
   DEPENDENCIES rclcpp gazebo_dev gazebo_msgs gazebo_ros geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs uvs_message uvs_tools
 )
 
+set(WORLDXACROFILE ${CMAKE_SOURCE_DIR}/worlds/uvs_gazebo.world.xacro)
+GEN_XACRO(${WORLDXACROFILE})
+
 install(
   DIRECTORY launch worlds
   DESTINATION share/${PROJECT_NAME}

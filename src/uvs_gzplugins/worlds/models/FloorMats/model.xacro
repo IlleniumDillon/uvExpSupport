@@ -1,0 +1,76 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+
+<xacro:property name="block_width" value="0.58"/>
+<xacro:property name="block_thick" value="0.02"/>
+
+<xacro:macro name="putDefaultFloorMat" params="name initpose color_id">
+
+    <model name="${name}">
+        <pose>${initpose[0]} ${initpose[1]} ${block_thick/2} 0 0 ${initpose[2]}</pose>
+        <scale>1 1 1</scale>
+        <static>1</static>
+        <link name='link_0'>
+            <visual name='visual'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${block_width} ${block_width} ${block_thick}</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                    <xacro:if value="${color_id == 0}">
+                        <uri>file://$(find uvs_gzplugins)/worlds/models/FloorMats/materials/blue.material</uri>
+                        <name>Uvs/blue</name>
+                    </xacro:if>
+                    <xacro:if value="${color_id == 1}">
+                        <uri>file://$(find uvs_gzplugins)/worlds/models/FloorMats/materials/brown.material</uri>
+                        <name>Uvs/brown</name>
+                    </xacro:if>
+                    </script>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${block_width} ${block_width} ${block_thick}</size>
+                    </box>
+                </geometry>
+            </collision>
+        </link>
+    </model>
+
+</xacro:macro>
+
+<xacro:macro name="putMatMatrixLoopUD" params="lr ud ld_pose">
+    <xacro:if value="${ud}">
+        <xacro:putDefaultFloorMat 
+            name="floor_mat_${lr}_${ud}" 
+            initpose="${[
+                ld_pose[0]+block_width*(lr), 
+                ld_pose[1]+block_width*(ud), 
+                ld_pose[2]
+            ]}" 
+            color_id="${(lr+ud)%2}"
+        />
+        <xacro:putMatMatrixLoopUD lr="${lr}" ud="${ud-1}" ld_pose="${ld_pose}"/>
+    </xacro:if>
+</xacro:macro>
+
+<xacro:macro name="putMatMatrixLoopLR" params="lr ud ld_pose">
+    <xacro:if value="${lr}">
+        <xacro:putMatMatrixLoopUD lr="${lr}" ud="${ud}" ld_pose="${ld_pose}"/>
+        <xacro:putMatMatrixLoopLR lr="${lr-1}" ud="${ud}" ld_pose="${ld_pose}"/>
+    </xacro:if>
+</xacro:macro>
+
+<xacro:macro name="putMatMatrix" params="left right up down">
+    <xacro:property name="lr" value="${left+right}"/>   
+    <xacro:property name="ud" value="${up+down}"/>
+    <xacro:property name="ld_pose" value="${[-block_width*(left-0.5),-block_width*(down-0.5),0]}"/>
+
+    <xacro:putMatMatrixLoopLR lr="${lr}" ud="${ud}" ld_pose="${ld_pose}"/>
+</xacro:macro>
+
+</world>

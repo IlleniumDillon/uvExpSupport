@@ -1,0 +1,13 @@
+material Uvs/brown
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture brown_texture.png
+            }
+        }
+    }
+}
