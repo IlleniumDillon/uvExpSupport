@@ -1,0 +1,14 @@
+material Uvs/obstacle
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture obstacle.png 
+                tex_address_mode wrap
+            }
+        }
+    }
+}

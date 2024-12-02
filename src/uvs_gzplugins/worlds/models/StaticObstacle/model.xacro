@@ -1,0 +1,45 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+
+<xacro:property name="obstacle_width" value="0.455"/>
+<xacro:property name="obstacle_height" value="0.36"/>
+
+<xacro:macro name="putDefaultObstacle" params="name initpose">
+    <model name="${name}">
+        <pose>${initpose[0]} ${initpose[1]} ${obstacle_height/2+block_thick} 0 0 ${initpose[2]}</pose>
+        <scale>1 1 1</scale>
+        <static>1</static>
+        <link name='link_0'>
+            <visual name='visual'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${obstacle_width} ${obstacle_width} ${obstacle_height}</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>file://$(find uvs_gzplugins)/worlds/models/StaticObstacle/materials/obstacle.material</uri>
+                        <name>Uvs/obstacle</name>
+                    </script>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${obstacle_width} ${obstacle_width} ${obstacle_height}</size>
+                    </box>
+                </geometry>
+            </collision>
+        </link>
+    </model>
+</xacro:macro>
+
+<xacro:macro name="putObstacleList" params="prefix obstacle_list">
+    <xacro:if value="${obstacle_list}">
+        <xacro:putDefaultObstacle name="${prefix}_${len(obstacle_list)}" initpose="${obstacle_list[0]}"/>
+        <xacro:putObstacleList prefix="${prefix}" obstacle_list="${obstacle_list[1:]}"/>
+    </xacro:if>
+</xacro:macro>
+
+</world>

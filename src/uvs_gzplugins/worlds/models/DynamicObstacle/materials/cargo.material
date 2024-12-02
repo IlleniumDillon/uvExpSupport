@@ -1,0 +1,14 @@
+material Uvs/cargo
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture cargo.png 
+                tex_address_mode wrap
+            }
+        }
+    }
+}

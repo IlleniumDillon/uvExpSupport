@@ -1,0 +1,15 @@
+material Uvs/fence
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture fence.png 
+                tex_address_mode wrap
+                scale 0.1 1.0
+            }
+        }
+    }
+}

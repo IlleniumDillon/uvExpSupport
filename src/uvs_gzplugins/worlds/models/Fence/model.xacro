@@ -1,7 +1,79 @@
 <world xmlns:xacro="http://wiki.ros.org/xacro">
-<xacro:property name="wall_thick" value="0.005" />
 
-<xacro:macro name="putDefaultFence" params="">
+<xacro:property name="wall_thick" value="0.005" />
+<xacro:property name="wall_height" value="0.515" />
+
+<xacro:macro name="putDefaultFence" params="name pose wall_len">
+    <model name="${name}">
+        <pose>${pose[0]} ${pose[1]} ${wall_height/2} 0 0 ${pose[2]}</pose>
+        <scale>1 1 1</scale>
+        <static>1</static>
+        <link name='link_0'>
+            <visual name='visual'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${wall_thick} ${wall_len} ${wall_height}</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>file://$(find uvs_gzplugins)/worlds/models/Fence/materials/fence.material</uri>
+                        <name>Uvs/fence</name>
+                    </script>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${wall_thick} ${wall_len} ${wall_height}</size>
+                    </box>
+                </geometry>
+            </collision>
+        </link>
+    </model>
+</xacro:macro>
+
+<xacro:property name="PI" value="3.14159265359" />
+
+<xacro:macro name="putSquareFence" params="name ld xlen ylen">
+    <xacro:putDefaultFence 
+        name="${name}_1"
+        pose="${[
+            ld[0] - wall_thick/2,
+            ld[1] + ylen/2,
+            0
+        ]}"
+        wall_len="${ylen}"
+    />
+    <xacro:putDefaultFence 
+        name="${name}_2"
+        pose="${[
+            ld[0] + xlen + wall_thick/2,
+            ld[1] + ylen/2,
+            0
+        ]}"
+        wall_len="${ylen}"
+    />
+    <xacro:putDefaultFence 
+        name="${name}_3"
+        pose="${[
+            ld[0] + xlen/2,
+            ld[1] - wall_thick/2,
+            PI/2
+        ]}"
+        wall_len="${xlen}"
+    />
+    <xacro:putDefaultFence 
+        name="${name}_4"
+        pose="${[
+            ld[0] + xlen/2,
+            ld[1] + ylen + wall_thick/2,
+            PI/2
+        ]}"
+        wall_len="${xlen}"
+    />
 </xacro:macro>
 
 </world>

@@ -1,0 +1,138 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+
+<xacro:property name="cargo_width" value="0.41"/>
+<xacro:property name="cargo_height" value="0.31"/>
+<xacro:property name="cargo_wheel_radius" value="0.03"/>
+
+<xacro:macro name="putDefaultCargo" params="name initpose">
+    <model name="${name}">
+        <pose>${initpose[0]} ${initpose[1]} ${cargo_height/2+cargo_wheel_radius+block_thick} 0 0 ${initpose[2]}</pose>
+        <scale>1 1 1</scale>
+        <static>0</static>
+        <link name='link_0'>
+            <visual name='visual'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${cargo_width} ${cargo_width} ${cargo_height}</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>file://$(find uvs_gzplugins)/worlds/models/DynamicObstacle/materials/cargo.material</uri>
+                        <name>Uvs/cargo</name>
+                    </script>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <pose>0 0 0 0 -0 0</pose>
+                <geometry>
+                    <box>
+                        <size>${cargo_width} ${cargo_width} ${cargo_height}</size>
+                    </box>
+                </geometry>
+            </collision>
+        </link>
+        <link name='link_1'>
+            <visual name='visual'>
+                <pose>${cargo_width/2} ${cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+            <collision name='collision'>
+                <pose>${cargo_width/2} ${cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </collision>
+        </link>
+        <link name='link_2'>
+            <visual name='visual'>
+                <pose>${cargo_width/2} ${-cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+            <collision name='collision'>
+                <pose>${cargo_width/2} ${-cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </collision>
+        </link>
+        <link name='link_3'>
+            <visual name='visual'>
+                <pose>${-cargo_width/2} ${-cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+            <collision name='collision'>
+                <pose>${-cargo_width/2} ${-cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </collision>
+        </link>
+        <link name='link_4'>
+            <visual name='visual'>
+                <pose>${-cargo_width/2} ${cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+            <collision name='collision'>
+                <pose>${-cargo_width/2} ${cargo_width/2} ${-cargo_height/2} 0 -0 0</pose>
+                <geometry>
+                    <sphere>
+                        <radius>${cargo_wheel_radius}</radius>
+                    </sphere>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="j_1" type="fixed">
+            <parent>link_0</parent>
+            <child>link_1</child>
+            <pose>0 0 0 0 0 0</pose>
+        </joint>
+        <joint name="j_2" type="fixed">
+            <parent>link_0</parent>
+            <child>link_2</child>
+            <pose>0 0 0 0 0 0</pose>
+        </joint>
+        <joint name="j_3" type="fixed">
+            <parent>link_0</parent>
+            <child>link_3</child>
+            <pose>0 0 0 0 0 0</pose>
+        </joint>
+        <joint name="j_4" type="fixed">
+            <parent>link_0</parent>
+            <child>link_4</child>
+            <pose>0 0 0 0 0 0</pose>
+        </joint>
+    </model>
+</xacro:macro>
+
+<xacro:macro name="putCargoList" params="name_list initpose_list">
+    <xacro:if value="${initpose_list}">
+        <xacro:putDefaultCargo name="${name_list[0]}" initpose="${initpose_list[0]}"/>
+        <xacro:putCargoList name_list="${name_list[1:]}" initpose_list="${initpose_list[1:]}"/>
+    </xacro:if>
+</xacro:macro>
+
+</world>

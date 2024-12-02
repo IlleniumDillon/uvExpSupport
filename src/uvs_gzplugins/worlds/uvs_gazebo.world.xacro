@@ -1,6 +1,9 @@
 <sdf version='1.7'>
     <world name='default' xmlns:xacro="http://wiki.ros.org/xacro">
         <xacro:include filename="models/FloorMats/model.xacro" />
+        <xacro:include filename="models/Fence/model.xacro" />
+        <xacro:include filename="models/StaticObstacle/model.xacro" />
+        <xacro:include filename="models/DynamicObstacle/model.xacro" />
         <scene>
             <ambient>0.4 0.4 0.4 1</ambient>
             <background>0.25 0.25 0.25 1</background>
@@ -11,6 +14,38 @@
             <specular>1 1 1 0</specular>
             <direction>-1 -1 -1</direction>
         </light>
-        <xacro:putMatMatrix left="10" right="10" up="10" down="10" />
+        <xacro:putMatMatrix left="6" right="5" up="8" down="7" />
+        <xacro:putSquareFence name="fence" ld="${[-3.48,-4.06,0]}" xlen="6.38" ylen="8.7" />
+        <xacro:putObstacleList prefix="obstacle" obstacle_list="${[
+            [0.87,2.61,0],
+            [2.03,0.87,0],
+            [-0.29,0.87,0],
+            [-0.29,1.45,0],
+            [-0.29,2.03,0],
+            [-0.29,3.19,0],
+            [-0.29,3.77,0],
+            [-0.29,4.35,0],
+            [-0.87,0.87,0],
+            [-1.45,0.87,0],
+            [-2.03,0.87,0],
+            [-2.61,0.87,0],
+            [-3.19,0.87,0],
+            [-0.29,-0.29,0],
+            [0.29,-0.29,0],
+            [0.87,-0.29,0],
+            [2.03,-0.29,0],
+            [2.61,-0.29,0],
+            [-0.87,-0.87,0],
+            [-1.45,-0.87,0],
+            [-2.61,-0.87,0],
+            [-3.19,-1.45,0]
+        ]}" />
+        
+        <xacro:putCargoList name_list="${['c1','c2','c3','c4']}" initpose_list="${[
+            [-2.0, -0.864, 0.0],
+            [-0.258, 0.249, 0.0],
+            [1.52, -0.316, 0.0],
+            [-0.274, 2.59, 0.0]
+        ]}" />
     </world>
 </sdf>
