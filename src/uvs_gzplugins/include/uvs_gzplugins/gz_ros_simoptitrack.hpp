@@ -1,6 +1,14 @@
 #ifndef UVS_GZPLUGINS_GZ_ROS_SIMOPTITRACK_HPP
 #define UVS_GZPLUGINS_GZ_ROS_SIMOPTITRACK_HPP
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <rclcpp/rclcpp.hpp>
+
+#include "uvs_message/msg/uv_opt_pose_list.hpp"
+
 #include <gazebo/common/Plugin.hh>
 
 #include <gazebo/common/Events.hh>
@@ -13,11 +21,6 @@
 #ifdef IGN_PROFILER_ENABLE
 #include <ignition/common/Profiler.hh>
 #endif
-#include <rclcpp/rclcpp.hpp>
-
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace gazebo_plugins
 {
