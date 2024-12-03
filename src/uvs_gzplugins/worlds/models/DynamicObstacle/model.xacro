@@ -2,7 +2,7 @@
 
 <xacro:property name="cargo_width" value="0.41"/>
 <xacro:property name="cargo_height" value="0.31"/>
-<xacro:property name="cargo_wheel_radius" value="0.03"/>
+<xacro:property name="cargo_wheel_radius" value="0.02"/>
 
 <xacro:macro name="putDefaultCargo" params="name initpose">
     <model name="${name}">

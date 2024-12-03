@@ -1,0 +1,447 @@
+<world xmlns:xacro="http://wiki.ros.org/xacro">
+
+<xacro:macro name="putAgent" params="name pose">
+
+    <model name="${name}">
+        <pose>${pose[0]} ${pose[1]} ${pose[2]} 0 0 0</pose>
+        <link name="base_footprint"/>
+        <link name="base_link">
+            <inertial>
+                <pose>-0.011 0.0002 -0.00832 0 0 0</pose>
+                <mass> 1.1011218463245 </mass>
+                <inertia>
+                        <ixx>0.00683403160871643</ixx>
+                        <ixy>-1.43326126624159E-06</ixy>
+                        <ixz>0.000665507738691208</ixz>
+                        <iyy>0.0091844048006001</iyy>
+                        <iyz>3.7191085325542E-06</iyz>
+                        <izz>0.0114582299070878</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 -1.5708</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/base_link.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <!-- <color rgba="0 0.7 0 1"/> -->
+                    <ambient>0 0.7 0 1</ambient>
+                    <diffuse>0 0.5 0 1</diffuse>
+                    <specular>0.2 0.2 0.2 1</specular>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 -1.5708</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/base_link.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="base_joint" type="fixed">
+            <parent>base_footprint</parent>
+            <child>base_link</child>
+            <pose>0.0 0.0 0.08 0 0 0</pose>
+        </joint>
+        <link name="astra_link">
+            <pose relative_to="base_link">0.0484 0 0.10494 0 0 0</pose>
+            <inertial>
+                <pose>0.0003 -3.63185E-06 -0.01238 0 0 0</pose>
+                <mass> 0.249477026881758 </mass>
+                <inertia>
+                        <ixx>0.000512759440122099</ixx>
+                        <ixy>3.59531977965561E-08</ixy>
+                        <ixz>-7.77105312830466E-06</ixz>
+                        <iyy>0.000168771991127263</iyy>
+                        <iyz>4.52266817392523E-08</iyz>
+                        <izz>0.000428421579554258</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/astra_link.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.2 0.2 0.2 1</diffuse>
+                    <specular>0.1 0.1 0.1 1</specular>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/astra_link.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="astra_joint" type="revolute">
+            <parent>base_link</parent>
+            <child>astra_link</child>
+            <!-- <pose>0.0484 0 0.10494 0 0 0</pose> -->
+            <axis>
+                <xyz>0 0 1</xyz> 
+                <limit>
+                    <lower>-0.52358</lower>
+                    <upper>0.52358</upper>
+                    <effort>100</effort>
+                    <velocity>1</velocity>
+                </limit>
+            </axis>
+        </joint>
+        <link name="arm">
+            <pose>0.12925 0 -0.014083 -0.7854 0 -1.5708</pose>
+            <inertial>
+                <pose>-0.006174 8.44369E-05 0.0132 0 0 0</pose>
+                <mass> 0.067681113134478 </mass>
+                <inertia>
+                        <ixx>2.68497509518873E-05</ixx>
+                        <ixy>-3.33020165981552E-06</ixy>
+                        <ixz>-9.65563060195426E-07</ixz>
+                        <iyy>3.51677567732461E-05</iyy>
+                        <iyz>-4.72072757937217E-06</iyz>
+                        <izz>4.4994530861743E-05</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/arm.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <ambient>0 0 0 1</ambient>
+                    <diffuse>0.2 0.2 0.2 1</diffuse>
+                    <specular>0.2 0.2 0.2 1</specular>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/arm.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="arm_joint" type="fixed">
+            <parent> base_link </parent>
+            <child> arm </child>
+            <axis><xyz> 0 0 0</xyz> </axis>
+            <pose>0.12925 0 -0.014083 -0.7854 0 -1.5708</pose>
+        </joint>
+        <link name="arm_link1">
+            <pose relative_to="arm">0 0.0295 0.0471 0 -1.5708 3.14</pose>
+            <inertial>
+                <pose>-0.00227 0.024777 0.000485 0 1.5708 0</pose>
+                <mass> 0.0315348657457593 </mass>
+                <inertia>
+                        <ixx>2.62365924906028E-05</ixx>
+                        <ixy>-8.71620806198248E-07</ixy>
+                        <ixz>3.70960358896292E-09</ixz>
+                        <iyy>5.75254728345384E-06</iyy>
+                        <iyz>1.32494709462361E-07</iyz>
+                        <izz>2.43479091390021E-05</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/arm_link1.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <!-- <color rgba="0.75294 0.75294 0.75294 1"/> -->
+                    <ambient>0.75294 0.75294 0.75294 1</ambient>
+                    <diffuse>0.2 0.2 0.2 1</diffuse>
+                    <specular>0.2 0.2 0.2 1</specular>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/arm_link1.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="arm_joint1" type="revolute">
+            <parent> arm </parent>
+            <child> arm_link1 </child>
+            <axis>
+                <xyz> 0 0 1</xyz> 
+                <limit>
+                    <lower>-3.927</lower>
+                    <upper>0</upper>
+                    <effort>100</effort>
+                    <velocity>1</velocity>
+                </limit>
+            </axis>
+            <!-- <pose>0 0.0295 0.0471 0 -1.5708 3.14</pose> -->
+        </joint>
+        <link name="arm_link2">
+            <pose relative_to="arm_link1">0 0.08285 0 0 0 -2.3562</pose>
+            <inertial>
+                <pose>-0.012 0.04428 -0.00083 0 0 0</pose>
+                <mass> 0.064068284960248 </mass>
+                <inertia>
+                        <ixx>5.32496834034383E-05</ixx>
+                        <ixy>1.14801087297394E-05</ixy>
+                        <ixz>-7.21376567958445E-07</ixz>
+                        <iyy>1.94399604109465E-05</iyy>
+                        <iyz>1.57043385958373E-06</iyz>
+                        <izz>5.71389111747307E-05</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/arm_link2.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <!-- <color rgba="0 0.7 0 1"/> -->
+                    <ambient>0.75294 0.75294 0.75294 1</ambient>
+                    <diffuse>0.2 0.2 0.2 1</diffuse>
+                    <specular>0.2 0.2 0.2 1</specular>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/arm_link2.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="arm_joint2" type="revolute">
+            <parent> arm_link1 </parent>
+            <child> arm_link2 </child>
+            <axis>
+                <xyz> 0 0 1</xyz>
+                <limit>
+                    <lower>-0.2617</lower>
+                    <upper>3.926875</upper>
+                    <effort>100</effort>
+                    <velocity>1</velocity>
+                </limit>
+            </axis>
+            <!-- <pose>0 0.08285 0 0 0 -2.3562</pose> -->
+        </joint>
+        <!-- <link name="right_link1">
+            <inertial>
+                <pose>-0.00022 0.0042 0.0001565 0 0 0</pose>
+                <mass> 0.00183348845051841 </mass>
+                <inertia>
+                        <ixx>2.0324777292641E-07</ixx>
+                        <ixy>-8.64022960782153E-09</ixy>
+                        <ixz>3.40379009885252E-10</ixz>
+                        <iyy>5.15029451291985E-08</iyy>
+                        <iyz>-6.50409742399053E-09</iyz>
+                        <izz>2.47897272989704E-07</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/right_link1.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <color rgba="0.75294 0.75294 0.75294 1"/>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/right_link1.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="Jaws_joint" type="revolute">
+            <pose>0.0045 0.06415 -0.01185 0 1.5708 0</pose>
+            <parent> arm_link2 </parent>
+            <child> right_link1 </child>
+            <axis><xyz> 0 0 1</xyz> </axis>
+            <limit>
+                <lower>-1.6</lower>
+                <upper>0</upper>
+                <effort>100</effort>
+                <velocity>1</velocity>
+            </limit>
+        </joint>
+        <link name="right_link2">
+            <inertial>
+                <pose>-0.0062 0.020796 -0.0031 0 0 0</pose>
+                <mass> 0.00249011366902266 </mass>
+                <inertia>
+                        <ixx>6.52013082134657E-07</ixx>
+                        <ixy>1.28158340799434E-07</ixy>
+                        <ixz>1.32545668593733E-09</ixz>
+                        <iyy>5.40527011205097E-08</iyy>
+                        <iyz>-4.44570381398951E-09</iyz>
+                        <izz>6.84401893462913E-07</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/right_link2.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <color rgba="0.75294  0.75294 0.75294 1"/>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/right_link2.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="right_joint2" type="revolute">
+            <pose>0.0009 0.03 0 0 0 0</pose>
+            <parent> right_link1 </parent>
+            <child> right_link2 </child>
+            <axis><xyz> 0 0 -1</xyz> </axis>
+            <mimic joint="Jaws_joint"><multiplier>1</multiplier></mimic>
+        </joint>
+        <link name="right_link3">
+            <inertial>
+                <pose>6.84923716706099E-05 0.018624 -0.00265 0 0 0</pose>
+                <mass> 0.000745 </mass>
+                <inertia>
+                        <ixx>1.04686918388409E-07</ixx>
+                        <ixy>-3.26477129854809E-10</ixy>
+                        <ixz>1.48779762241015E-11</ixz>
+                        <iyy>1.59187935398975E-08</iyy>
+                        <iyz>4.04566802579487E-09</iyz>
+                        <izz>9.13337951601148E-08</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/right_link3.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <color rgba="0.75294 0.75294 0.75294 1"/>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/right_link3.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="right_joint3" type="revolute">
+            <pose>0.0045 0.08215 -0.00395 0 1.5708 0</pose>
+            <parent> arm_link2 </parent>
+            <child> right_link3 </child>
+            <axis><xyz> 0 0 1</xyz> </axis>
+            <mimic joint="right_joint2"><multiplier>1</multiplier></mimic>
+        </joint>
+        <link name="left_link1">
+            <inertial>
+                <pose>0.0002688 0.00628852 0.001 0 0 0</pose>
+                <mass> 0.00121 </mass>
+                <inertia>
+                        <ixx>1.69131415914509E-07</ixx>
+                        <ixy>9.14718502533155E-09</ixy>
+                        <ixz>-1.90844103767323E-14</ixz>
+                        <iyy>3.19585470928261E-08</iyy>
+                        <iyz>3.97689754998194E-14</iyz>
+                        <izz>2.00283501063598E-07</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/left_link1.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <color rgba="0.75294 0.75294 0.75294 1"/>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/left_link1.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="left_joint1" type="revolute">
+            <pose>0.0045 0.06415 0.0127 0 1.5708 0</pose>
+            <parent> arm_link2 </parent>
+            <child> left_link1 </child>
+            <axis><xyz> 0 0 1</xyz> </axis>
+            <mimic joint="Jaws_joint"><multiplier>-1</multiplier></mimic>
+        </joint>
+        <link name="left_link2">
+            <inertial>
+                <pose>0.0062 0.0208 -0.0031 0 0 0</pose>
+                <mass> 0.00249011366902267 </mass>
+                <inertia>
+                        <ixx>6.52017871569716E-07</ixx>
+                        <ixy>-1.28147201790302E-07</ixy>
+                        <ixz>-1.325374459077E-09</ixz>
+                        <iyy>5.40479137210298E-08</iyy>
+                        <iyz>-4.44572858127216E-09</iyz>
+                        <izz>6.84401895498491E-07</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/left_link2.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <color rgba="0.75294 0.75294 0.75294 1"/>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/left_link2.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="left_joint2" type="revolute">
+            <pose>-0.00091 0.03 0 0 0 0</pose>
+            <parent> left_link1 </parent>
+            <child> left_link2 </child>
+            <axis><xyz> 0 0 1</xyz> </axis>
+            <mimic joint="left_joint1"><multiplier>-1</multiplier></mimic>
+        </joint>
+        <link name="left_link3">
+            <inertial>
+                <pose>8.14319609551461E-05 0.018624 -0.0035 0 0 0</pose>
+                <mass> 0.000745 </mass>
+                <inertia>
+                        <ixx>1.04686410925661E-07</ixx>
+                        <ixy>-3.8815108567023E-10</ixy>
+                        <ixz>1.76885865580073E-11</ixz>
+                        <iyy>1.59192877854819E-08</iyy>
+                        <iyz>4.04566084059286E-09</iyz>
+                        <izz>9.13337860026262E-08</izz>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/left_link3.STL</uri></mesh>
+                </geometry>
+                <material>
+                    <color rgba="0.75294 0.75294 0.75294 1"/>
+                </material>
+            </visual>
+            <collision name="collision">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/left_link3.STL</uri></mesh>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="left_joint3" type="revolute">
+            <pose>0.0045 0.08215 0.00505 0 1.5708 0</pose>
+            <parent> arm_link2 </parent>
+            <child> left_link3 </child>
+            <axis><xyz> 0 0 1</xyz> </axis>
+            <mimic joint="left_joint2"><multiplier>-1</multiplier></mimic>
+        </joint> -->
+    </model>
+</xacro:macro>
+
+</world>
