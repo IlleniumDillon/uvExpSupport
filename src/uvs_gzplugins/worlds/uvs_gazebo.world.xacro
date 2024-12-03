@@ -50,5 +50,16 @@
         ]}" />
 
         <xacro:putAgent name="uv05" pose="${[-1.5,-1.5,0.1]}" />
+
+
+        <plugin name="uvs_gzplugins_optitrack" filename="libgz_ros_simoptitrack.so">
+            <topic>uvs_opt_pose_list</topic>
+            <publish_period>0.01</publish_period>
+            <model>uv05</model>
+            <model>c1</model>
+            <model>c2</model>
+            <model>c3</model>
+            <model>c4</model>
+        </plugin>
     </world>
 </sdf>

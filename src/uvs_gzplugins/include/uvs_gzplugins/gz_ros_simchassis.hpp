@@ -100,6 +100,16 @@ private:
     double limit_anglevelocity_;
     double wheel_separation_;
 
+    std::string arm_base_joint_name_;
+    std::string arm_arm_joint_name_;
+
+    gazebo::physics::JointPtr arm_base_joint_;
+    gazebo::physics::JointPtr arm_arm_joint_;
+
+    std::vector<gazebo::physics::ModelPtr> dynamic_models_;
+    gazebo::physics::ModelPtr union_model_ = nullptr;
+    std::string emag_link_name_;
+
     gazebo::common::Time last_world_update_time_;
 };
 }   // namespace gazebo_plugins

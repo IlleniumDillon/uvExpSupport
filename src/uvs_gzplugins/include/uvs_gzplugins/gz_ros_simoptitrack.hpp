@@ -38,7 +38,22 @@ protected:
     // Documentation inherited
     void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr sdf) override;
 
+    void Reset() override;
+
+    void OnUpdate(const gazebo::common::UpdateInfo & _info);
+
 private:
+    gazebo_ros::Node::SharedPtr ros_node_;
+    gazebo::physics::WorldPtr world_;
+    gazebo::event::ConnectionPtr update_connection_;
+    std::vector<gazebo::physics::ModelPtr> models_;
+
+    rclcpp::Publisher<uvs_message::msg::UvOptPoseList>::SharedPtr uv_opt_pose_list_pub_;
+    std::string uv_opt_pose_list_topic_;
+    uvs_message::msg::UvOptPoseList uv_opt_pose_list_msg_;
+
+    double publish_period_;
+    gazebo::common::Time last_publish_time_;
 };
 }   // namespace gazebo_plugins
 

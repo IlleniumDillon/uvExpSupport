@@ -35,6 +35,14 @@
                 <geometry>
                     <mesh><uri>file://$(find uvs_gzplugins)/worlds/models/Agent/meshes/base_link.STL</uri></mesh>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.5</mu>
+                            <mu2>0.5</mu2>
+                        </ode>
+                    </friction>
+                </surface>
             </collision>
         </link>
         <joint name="base_joint" type="fixed">
@@ -89,18 +97,18 @@
             </axis>
         </joint>
         <link name="arm">
-            <pose>0.12925 0 -0.014083 -0.7854 0 -1.5708</pose>
+            <pose relative_to="base_link">0.12925 0 -0.014083 -0.7854 0 -1.5708</pose>
             <inertial>
                 <pose>-0.006174 8.44369E-05 0.0132 0 0 0</pose>
                 <mass> 0.067681113134478 </mass>
-                <inertia>
+                <!-- <inertia>
                         <ixx>2.68497509518873E-05</ixx>
                         <ixy>-3.33020165981552E-06</ixy>
                         <ixz>-9.65563060195426E-07</ixz>
                         <iyy>3.51677567732461E-05</iyy>
                         <iyz>-4.72072757937217E-06</iyz>
                         <izz>4.4994530861743E-05</izz>
-                </inertia>
+                </inertia> -->
             </inertial>
             <visual name="visual">
                 <pose>0 0 0 0 0 0</pose>
@@ -124,21 +132,21 @@
             <parent> base_link </parent>
             <child> arm </child>
             <axis><xyz> 0 0 0</xyz> </axis>
-            <pose>0.12925 0 -0.014083 -0.7854 0 -1.5708</pose>
+            <!-- <pose>0.12925 0 -0.014083 -0.7854 0 -1.5708</pose> -->
         </joint>
         <link name="arm_link1">
             <pose relative_to="arm">0 0.0295 0.0471 0 -1.5708 3.14</pose>
             <inertial>
                 <pose>-0.00227 0.024777 0.000485 0 1.5708 0</pose>
                 <mass> 0.0315348657457593 </mass>
-                <inertia>
+                <!-- <inertia>
                         <ixx>2.62365924906028E-05</ixx>
                         <ixy>-8.71620806198248E-07</ixy>
                         <ixz>3.70960358896292E-09</ixz>
                         <iyy>5.75254728345384E-06</iyy>
                         <iyz>1.32494709462361E-07</iyz>
                         <izz>2.43479091390021E-05</izz>
-                </inertia>
+                </inertia> -->
             </inertial>
             <visual name="visual">
                 <pose>0 0 0 0 0 0</pose>
@@ -167,7 +175,7 @@
                 <limit>
                     <lower>-3.927</lower>
                     <upper>0</upper>
-                    <effort>100</effort>
+                    <!-- <effort>100</effort> -->
                     <velocity>1</velocity>
                 </limit>
             </axis>
@@ -178,14 +186,14 @@
             <inertial>
                 <pose>-0.012 0.04428 -0.00083 0 0 0</pose>
                 <mass> 0.064068284960248 </mass>
-                <inertia>
+                <!-- <inertia>
                         <ixx>5.32496834034383E-05</ixx>
                         <ixy>1.14801087297394E-05</ixy>
                         <ixz>-7.21376567958445E-07</ixz>
                         <iyy>1.94399604109465E-05</iyy>
                         <iyz>1.57043385958373E-06</iyz>
                         <izz>5.71389111747307E-05</izz>
-                </inertia>
+                </inertia> -->
             </inertial>
             <visual name="visual">
                 <pose>0 0 0 0 0 0</pose>
@@ -214,7 +222,7 @@
                 <limit>
                     <lower>-0.2617</lower>
                     <upper>3.926875</upper>
-                    <effort>100</effort>
+                    <!-- <effort>100</effort> -->
                     <velocity>1</velocity>
                 </limit>
             </axis>
@@ -441,6 +449,23 @@
             <axis><xyz> 0 0 1</xyz> </axis>
             <mimic joint="left_joint2"><multiplier>-1</multiplier></mimic>
         </joint> -->
+        <plugin name="uvs_gzplugins_chassis" filename="libgz_ros_simchassis.so">
+            <status_topic>uvs_emb_status</status_topic>
+            <arm_topic>uvs_emb_arm</arm_topic>
+            <emag_topic>uvs_emb_emag</emag_topic>
+            <kinetics_topic>uvs_emb_kinetics</kinetics_topic>
+            <status_pub_period>0.05</status_pub_period>
+            <limit_velocity>0.5</limit_velocity>
+            <limit_anglevelocity>${PI}</limit_anglevelocity>
+            <wheel_separation>0.238</wheel_separation>
+            <arm_base_joint_name>arm_joint1</arm_base_joint_name>
+            <arm_arm_joint_name>arm_joint2</arm_arm_joint_name>
+            <emag_link_name>arm_link2</emag_link_name>
+            <model>c1</model>
+            <model>c2</model>
+            <model>c3</model>
+            <model>c4</model>
+        </plugin>
     </model>
 </xacro:macro>
 
