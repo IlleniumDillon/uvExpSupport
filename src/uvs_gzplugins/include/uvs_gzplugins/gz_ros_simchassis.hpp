@@ -11,6 +11,7 @@
 #include "uvs_message/msg/uv_emb_arm.hpp"
 #include "uvs_message/msg/uv_emb_emag.hpp"
 #include "uvs_message/msg/uv_emb_kinetics.hpp"
+#include "uvs_message/msg/gz_gui.hpp"
 
 #include <gazebo/common/Plugin.hh>
 
@@ -28,9 +29,9 @@
 
 namespace gazebo_plugins
 {
-
 class GzRosSimChassis : public gazebo::ModelPlugin
 {
+
 public:
     /// Constructor
     GzRosSimChassis();
@@ -81,6 +82,7 @@ private:
     rclcpp::Subscription<uvs_message::msg::UvEmbArm>::SharedPtr arm_sub_;
     rclcpp::Subscription<uvs_message::msg::UvEmbEmag>::SharedPtr emag_sub_;
     rclcpp::Subscription<uvs_message::msg::UvEmbKinetics>::SharedPtr kinetics_sub_;
+    rclcpp::Publisher<uvs_message::msg::GzGui>::SharedPtr gui_pub_;
 
     // std::timed_mutex mutex_status_;
     uvs_message::msg::UvEmbStatus status_msg_;

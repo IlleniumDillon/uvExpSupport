@@ -15,6 +15,11 @@
             <specular>1 1 1 0</specular>
             <direction>-1 -1 -1</direction>
         </light>
+        <gui>
+            <plugin name="uvs_gzplugins_gui" filename="libgz_ros_simgui.so">
+                <model>uv05</model>
+            </plugin>
+        </gui>
         <xacro:putMatMatrix left="6" right="5" up="8" down="7" />
         <xacro:putSquareFence name="fence" ld="${[-3.48,-4.06,0]}" xlen="6.38" ylen="8.7" />
         <xacro:putObstacleList prefix="obstacle" obstacle_list="${[
@@ -53,7 +58,7 @@
 
 
         <plugin name="uvs_gzplugins_optitrack" filename="libgz_ros_simoptitrack.so">
-            <topic>uvs_opt_pose_list</topic>
+            <topic>uvs_pose_list</topic>
             <publish_period>0.01</publish_period>
             <model>uv05</model>
             <model>c1</model>

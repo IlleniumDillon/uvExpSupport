@@ -51,6 +51,7 @@ void GzRosSimChassis::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
     arm_sub_ = ros_node_->create_subscription<uvs_message::msg::UvEmbArm>(arm_topic_, 1, std::bind(&GzRosSimChassis::arm_callback, this, std::placeholders::_1));
     emag_sub_ = ros_node_->create_subscription<uvs_message::msg::UvEmbEmag>(emag_topic_, 1, std::bind(&GzRosSimChassis::emag_callback, this, std::placeholders::_1));
     kinetics_sub_ = ros_node_->create_subscription<uvs_message::msg::UvEmbKinetics>(kinetics_topic_, 1, std::bind(&GzRosSimChassis::kinetics_callback, this, std::placeholders::_1));
+    gui_pub_ = ros_node_->create_publisher<uvs_message::msg::GzGui>("gz_gui", 1);
 
     update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GzRosSimChassis::OnUpdate, this, std::placeholders::_1));
 
@@ -82,6 +83,8 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
 
     bool emag_flag;
 
+    uvs_message::msg::GzGui gui_msg;
+
     if (dt < status_pub_period_)
     {
         return;
@@ -99,6 +102,13 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
     /// TODO: status of arm
 
     status_pub_->publish(status_msg_);
+
+    gui_msg.name = model_->GetName();
+    gui_msg.pose.x = pose.Pos().X();
+    gui_msg.pose.y = pose.Pos().Y();
+    gui_msg.pose.theta = pose.Rot().Yaw();
+    gui_msg.v = v_cur;
+    gui_msg.w = w_cur;
 
     // Update kinetics
     if (mutex_kinetics_.try_lock_for(std::chrono::milliseconds(1)))
@@ -149,14 +159,17 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
 
         // arm_base_joint_->SetPosition(0, 3);
         // arm_arm_joint_ ->SetPosition(0, 1);
-        arm_arm_joint_->SetPosition(0, arm_arm/4096.0*2*M_PI);
-        arm_base_joint_->SetPosition(0, -arm_base/4096.0*2*M_PI);
+        // arm_arm_joint_->SetPosition(0, arm_arm/4096.0*2*M_PI);
+        // arm_base_joint_->SetPosition(0, -arm_base/4096.0*2*M_PI);
+        gui_msg.arm_arm_rad = arm_arm_joint_->Position(0);
+        gui_msg.arm_base_rad = arm_base_joint_->Position(0);
     }
 
     /// TODO: Update emag
     if (mutex_emag_.try_lock_for(std::chrono::milliseconds(1)))
     {
         emag_flag = emag_msg_.enable;
+        gui_msg.emag_status = emag_flag;
         mutex_emag_.unlock();
         if (emag_flag)
         {
@@ -185,7 +198,7 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
             }
         }
     }
-    
+    gui_pub_->publish(gui_msg);
 }
 
 GZ_REGISTER_MODEL_PLUGIN (GzRosSimChassis)

@@ -135,6 +135,7 @@
             <!-- <pose>0.12925 0 -0.014083 -0.7854 0 -1.5708</pose> -->
         </joint>
         <link name="arm_link1">
+            <!-- <pose relative_to="arm">0 0.0295 0.0471 0 -1.5708 3.14</pose> -->
             <pose relative_to="arm">0 0.0295 0.0471 0 -1.5708 3.14</pose>
             <inertial>
                 <pose>-0.00227 0.024777 0.000485 0 1.5708 0</pose>
