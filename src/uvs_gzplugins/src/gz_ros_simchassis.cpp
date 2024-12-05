@@ -1,5 +1,10 @@
 #include "gz_ros_simchassis.hpp"
 
+#define arm_base_k (-0.001503759)
+#define arm_base_b (0.463157895)
+#define arm_arm_k (-0.001367742)
+#define arm_arm_b (5.0126)
+
 namespace gazebo_plugins
 {
 
@@ -53,6 +58,25 @@ void GzRosSimChassis::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
     kinetics_sub_ = ros_node_->create_subscription<uvs_message::msg::UvEmbKinetics>(kinetics_topic_, 1, std::bind(&GzRosSimChassis::kinetics_callback, this, std::placeholders::_1));
     gui_pub_ = ros_node_->create_publisher<uvs_message::msg::GzGui>("gz_gui", 1);
 
+    ros_node_->declare_parameter("vp", 1.0);
+    ros_node_->declare_parameter("vi", 5.0);
+    ros_node_->declare_parameter("vd", 0.0);
+    ros_node_->declare_parameter("v_max_i", 0.5);
+    ros_node_->declare_parameter("v_max_o", 1.5); 
+
+    ros_node_->declare_parameter("wp", 1.0);
+    ros_node_->declare_parameter("wi", 15.0);
+    ros_node_->declare_parameter("wd", 0.0);
+    ros_node_->declare_parameter("w_max_i", 0.75);
+    ros_node_->declare_parameter("w_max_o", 6.0);   
+
+    arm_msg_.arm_arm = 3855;
+    arm_msg_.arm_base = 308;
+    // arm_msg_.arm_arm = 3080;
+    // arm_msg_.arm_base = 840;
+    ctrl_v_.setParams(0, 40, 0.0, status_pub_period_, 1.0, 1.5);
+    ctrl_w_.setParams(0, 40, 0.0, status_pub_period_, 3.0, 6);
+
     update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GzRosSimChassis::OnUpdate, this, std::placeholders::_1));
 
     last_world_update_time_ = world_->SimTime();
@@ -73,9 +97,10 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
     ignition::math::Vector3d linear_velocity = model_->WorldLinearVel();
     ignition::math::Vector3d angular_velocity = model_->WorldAngularVel();
 
-    double v_cur = sqrt(pow(linear_velocity.X(), 2) + pow(linear_velocity.Y(), 2));
-    double w_cur = angular_velocity.Z();
     double theta_cur = pose.Rot().Yaw();
+    ignition::math::Vector3d linear_velocity_cur = pose.Rot().RotateVectorReverse(linear_velocity);
+    double v_cur = linear_velocity_cur.X();
+    double w_cur = angular_velocity.Z();
     double v_set, w_set;
     ignition::math::Vector3d linear_v_set, angular_v_set;
 
@@ -96,8 +121,8 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
     status_msg_.left_wheel_speed = v_cur - w_cur * wheel_separation_ / 2;
     status_msg_.right_wheel_speed = v_cur + w_cur * wheel_separation_ / 2;
     status_msg_.rotation_z = theta_cur;
-    status_msg_.arm_arm_pos = arm_arm_joint_->Position(0) / 2 / M_PI * 4096;
-    status_msg_.arm_base_pos = -arm_base_joint_->Position(0) / 2 / M_PI * 4096;
+    status_msg_.arm_arm_pos = (arm_arm_joint_->Position(0) - arm_arm_b) / arm_arm_k;
+    status_msg_.arm_base_pos = (arm_base_joint_->Position(0) - arm_base_b) / arm_base_k;
     status_msg_.voltage = 12.0;
     /// TODO: status of arm
 
@@ -133,24 +158,39 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
         {
             w_set = -limit_anglevelocity_;
         }
-
-        linear_v_set.X() = v_set * cos(theta_cur);
-        linear_v_set.Y() = v_set * sin(theta_cur);
-        linear_v_set.Z() = 0.0;
-        angular_v_set.X() = 0.0;
-        angular_v_set.Y() = 0.0;
-        angular_v_set.Z() = w_set;
-
-        model_->SetLinearVel(linear_v_set);
-        model_->SetAngularVel(angular_v_set);
-        if (union_model_ != nullptr)
-        {
-            union_model_->SetLinearVel(linear_v_set);
-            union_model_->SetAngularVel(angular_v_set);
-        }
+        ctrl_v_.setTarget(v_set);
+        ctrl_w_.setTarget(w_set);
     }
+    // ctrl_v_.setParams(
+    //     ros_node_->get_parameter("vp").as_double(),
+    //     ros_node_->get_parameter("vi").as_double(),
+    //     ros_node_->get_parameter("vd").as_double(),
+    //     status_pub_period_,
+    //     ros_node_->get_parameter("v_max_i").as_double(),
+    //     ros_node_->get_parameter("v_max_o").as_double()
+    // );
+    // ctrl_w_.setParams(
+    //     ros_node_->get_parameter("wp").as_double(),
+    //     ros_node_->get_parameter("wi").as_double(),
+    //     ros_node_->get_parameter("wd").as_double(),
+    //     status_pub_period_,
+    //     ros_node_->get_parameter("w_max_i").as_double(),
+    //     ros_node_->get_parameter("w_max_o").as_double()
+    // );
+    v_set = ctrl_v_.update(v_cur);
+    w_set = ctrl_w_.update(w_cur);
 
-    /// TODO: Update arm
+    linear_v_set.X() = v_set * cos(theta_cur);
+    linear_v_set.Y() = v_set * sin(theta_cur);
+    linear_v_set.Z() = 0.0;
+    angular_v_set.X() = 0.0;
+    angular_v_set.Y() = 0.0;
+    angular_v_set.Z() = w_set;
+
+    model_->SetLinearVel(linear_v_set);
+    model_->SetAngularVel(angular_v_set);
+
+    /// Update arm
     if (mutex_arm_.try_lock_for(std::chrono::milliseconds(1)))
     {
         arm_arm = arm_msg_.arm_arm;
@@ -159,8 +199,8 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
 
         // arm_base_joint_->SetPosition(0, 3);
         // arm_arm_joint_ ->SetPosition(0, 1);
-        // arm_arm_joint_->SetPosition(0, arm_arm/4096.0*2*M_PI);
-        // arm_base_joint_->SetPosition(0, -arm_base/4096.0*2*M_PI);
+        arm_arm_joint_->SetPosition(0, arm_arm * arm_arm_k + arm_arm_b);
+        arm_base_joint_->SetPosition(0, arm_base * arm_base_k + arm_base_b);
         gui_msg.arm_arm_rad = arm_arm_joint_->Position(0);
         gui_msg.arm_base_rad = arm_base_joint_->Position(0);
     }

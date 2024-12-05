@@ -29,6 +29,66 @@
 
 namespace gazebo_plugins
 {
+
+class PIDController
+{
+public:
+    PIDController(){};
+    ~PIDController(){};
+
+    void setParams(double kp, double ki, double kd, double dt, double limit_output, double limit_sum)
+    {
+        kp_ = kp;
+        ki_ = ki;
+        kd_ = kd;
+        dt_ = dt;
+        limit_output_ = limit_output;
+        limit_sum_ = limit_sum;
+    }
+    void setTarget(double target)
+    {
+        target_ = target;
+    }
+    double update(double current)
+    {
+        error_ = target_ - current;
+        error_sum_ += error_ * dt_;
+        if (error_sum_ > limit_sum_)
+        {
+            error_sum_ = limit_sum_;
+        }
+        if (error_sum_ < -limit_sum_)
+        {
+            error_sum_ = -limit_sum_;
+        }
+        output_ = kp_ * error_ + ki_ * error_sum_ + kd_ * (error_ - error_last_) / dt_;
+        if (output_ > limit_output_)
+        {
+            output_ = limit_output_;
+        }
+        if (output_ < -limit_output_)
+        {
+            output_ = -limit_output_;
+        }
+        error_last_ = error_;
+        return output_;
+    }
+
+public:
+    double dt_;
+    double kp_;
+    double ki_;
+    double kd_;
+    double target_;
+    double error_;
+    double error_last_;
+    double error_sum_;
+    double output_;
+
+    double limit_output_;
+    double limit_sum_;
+};
+
 class GzRosSimChassis : public gazebo::ModelPlugin
 {
 
@@ -113,6 +173,9 @@ private:
     std::string emag_link_name_;
 
     gazebo::common::Time last_world_update_time_;
+
+    PIDController ctrl_v_;
+    PIDController ctrl_w_;
 };
 }   // namespace gazebo_plugins
 
