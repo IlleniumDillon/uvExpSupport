@@ -110,30 +110,16 @@ protected:
     void OnUpdate(const gazebo::common::UpdateInfo & _info);
 
 
-    void arm_callback(const uvs_message::msg::UvEmbArm::SharedPtr msg)
-    {
-        if (mutex_arm_.try_lock_for(std::chrono::milliseconds(1)))
-        {
-            arm_msg_ = *msg;
-            mutex_arm_.unlock();
-        }
-    }
-    void emag_callback(const uvs_message::msg::UvEmbEmag::SharedPtr msg)
-    {
-        if (mutex_emag_.try_lock_for(std::chrono::milliseconds(1)))
-        {
-            emag_msg_ = *msg;
-            mutex_emag_.unlock();
-        }
-    }
-    void kinetics_callback(const uvs_message::msg::UvEmbKinetics::SharedPtr msg)
-    {
-        if (mutex_kinetics_.try_lock_for(std::chrono::milliseconds(1)))
-        {
-            kinetics_msg_ = *msg;
-            mutex_kinetics_.unlock();
-        }
-    }
+    void arm_callback(const uvs_message::msg::UvEmbArm::SharedPtr msg);
+
+    void emag_callback(const uvs_message::msg::UvEmbEmag::SharedPtr msg);
+
+    void kinetics_callback(const uvs_message::msg::UvEmbKinetics::SharedPtr msg);
+
+    void timer_callback();
+
+    void timer_collision_callback();
+
     void gz_contacts_callback(ConstContactsPtr & msg);
 private:
     gazebo_ros::Node::SharedPtr ros_node_;
@@ -146,6 +132,10 @@ private:
     rclcpp::Subscription<uvs_message::msg::UvEmbEmag>::SharedPtr emag_sub_;
     rclcpp::Subscription<uvs_message::msg::UvEmbKinetics>::SharedPtr kinetics_sub_;
     rclcpp::Publisher<uvs_message::msg::GzGui>::SharedPtr gui_pub_;
+    rclcpp::CallbackGroup::SharedPtr callback_group_timer_pub_;
+    rclcpp::CallbackGroup::SharedPtr callback_group_timer_collision_;
+    rclcpp::TimerBase::SharedPtr timer_pub_;
+    rclcpp::TimerBase::SharedPtr timer_collision_ = nullptr;
 
     // std::timed_mutex mutex_status_;
     uvs_message::msg::UvEmbStatus status_msg_;
@@ -155,6 +145,7 @@ private:
     uvs_message::msg::UvEmbEmag emag_msg_;
     std::timed_mutex mutex_kinetics_;
     uvs_message::msg::UvEmbKinetics kinetics_msg_;
+    uvs_message::msg::GzGui gui_msg;
 
     std::string status_topic_;
     double status_pub_period_;
@@ -176,7 +167,6 @@ private:
     std::string emag_link_name_;
 
     gazebo::common::Time last_world_update_time_;
-    gazebo::common::Time last_status_pub_time_;
 
     gazebo::transport::NodePtr gznode_;
     gazebo::transport::SubscriberPtr gzsub_;

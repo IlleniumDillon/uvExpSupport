@@ -9,6 +9,22 @@
 namespace gazebo_plugins
 {
 
+gazebo::common::Time current_time;
+double dt;
+ignition::math::Pose3d pose;
+ignition::math::Vector3d linear_velocity;
+ignition::math::Vector3d angular_velocity;
+double theta_cur;
+ignition::math::Vector3d linear_velocity_cur;
+double v_cur;
+double w_cur;
+double v_set, w_set;
+ignition::math::Vector3d linear_v_set, angular_v_set;
+double arm_arm_set, arm_base_set;
+double arm_arm_cur;
+double arm_base_cur;
+bool emag_flag;
+
 GzRosSimChassis::GzRosSimChassis(){}
 
 GzRosSimChassis::~GzRosSimChassis(){}
@@ -58,25 +74,20 @@ void GzRosSimChassis::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
     emag_sub_ = ros_node_->create_subscription<uvs_message::msg::UvEmbEmag>(emag_topic_, 1, std::bind(&GzRosSimChassis::emag_callback, this, std::placeholders::_1));
     kinetics_sub_ = ros_node_->create_subscription<uvs_message::msg::UvEmbKinetics>(kinetics_topic_, 1, std::bind(&GzRosSimChassis::kinetics_callback, this, std::placeholders::_1));
     gui_pub_ = ros_node_->create_publisher<uvs_message::msg::GzGui>("gz_gui", 1);
+    callback_group_timer_pub_ = ros_node_->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
+    timer_pub_ = ros_node_->create_wall_timer(std::chrono::milliseconds((int)(status_pub_period_ * 1000)), 
+                                              std::bind(&GzRosSimChassis::timer_callback, this),
+                                              callback_group_timer_pub_);
+    callback_group_timer_collision_ = ros_node_->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
+    // timer_collision_ = ros_node_->create_wall_timer(std::chrono::milliseconds(10), 
+    //                                                 std::bind(&GzRosSimChassis::timer_collision_callback, this),
+    //                                                 callback_group_timer_collision_);
 
-    // ros_node_->declare_parameter("vp", 1.0);
-    // ros_node_->declare_parameter("vi", 5.0);
-    // ros_node_->declare_parameter("vd", 0.0);
-    // ros_node_->declare_parameter("v_max_i", 0.5);
-    // ros_node_->declare_parameter("v_max_o", 1.5); 
-
-    // ros_node_->declare_parameter("wp", 1.0);
-    // ros_node_->declare_parameter("wi", 15.0);
-    // ros_node_->declare_parameter("wd", 0.0);
-    // ros_node_->declare_parameter("w_max_i", 0.75);
-    // ros_node_->declare_parameter("w_max_o", 6.0);   
 
     arm_msg_.arm_arm = 3855;
     arm_msg_.arm_base = 308;
-    // arm_msg_.arm_arm = 3080;
-    // arm_msg_.arm_base = 840;
-    // ctrl_v_.setParams(0, 40, 0.0, status_pub_period_, 1.0, 1.5);
-    // ctrl_w_.setParams(0, 40, 0.0, status_pub_period_, 3.0, 6);
+    arm_arm_set = arm_msg_.arm_arm * arm_arm_k + arm_arm_b;
+    arm_base_set = arm_msg_.arm_base * arm_base_k + arm_base_b;
 
     gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
     gznode_->Init();
@@ -85,41 +96,34 @@ void GzRosSimChassis::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
     update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GzRosSimChassis::OnUpdate, this, std::placeholders::_1));
 
     last_world_update_time_ = world_->SimTime();
-    last_status_pub_time_ = world_->SimTime();
 }
 
 void GzRosSimChassis::Reset()
 {
     last_world_update_time_ = world_->SimTime();
-    last_status_pub_time_ = world_->SimTime();
     kinetics_msg_.v = 0.0;
     kinetics_msg_.w = 0.0;
 }
 
 void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
 {
-    gazebo::common::Time current_time = world_->SimTime();
-    double dt = (current_time - last_world_update_time_).Double();
+    current_time = world_->SimTime();
+    dt = (current_time - last_world_update_time_).Double();
     last_world_update_time_ = current_time;
-    ignition::math::Pose3d pose = model_->WorldPose();
-    ignition::math::Vector3d linear_velocity = model_->WorldLinearVel();
-    ignition::math::Vector3d angular_velocity = model_->WorldAngularVel();
+    pose = model_->WorldPose();
+    linear_velocity = model_->WorldLinearVel();
+    angular_velocity = model_->WorldAngularVel();
 
-    double theta_cur = pose.Rot().Yaw();
-    ignition::math::Vector3d linear_velocity_cur = pose.Rot().RotateVectorReverse(linear_velocity);
-    double v_cur = linear_velocity_cur.X();
-    double w_cur = angular_velocity.Z();
-    static double v_set, w_set;
-    ignition::math::Vector3d linear_v_set, angular_v_set;
+    theta_cur = pose.Rot().Yaw();
+    linear_velocity_cur = pose.Rot().RotateVectorReverse(linear_velocity);
+    v_cur = linear_velocity_cur.X();
+    w_cur = angular_velocity.Z();
 
-    static double arm_arm_set, arm_base_set;
-    double arm_arm_cur = arm_arm_joint_->Position(0);
-    double arm_base_cur = arm_base_joint_->Position(0);
+    arm_arm_set, arm_base_set;
+    arm_arm_cur = arm_arm_joint_->Position(0);
+    arm_base_cur = arm_base_joint_->Position(0);
+
     double arm_arm, arm_base;
-
-    bool emag_flag;
-
-    uvs_message::msg::GzGui gui_msg;
 
 
     // set velocity
@@ -168,38 +172,41 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
     arm_arm_joint_->SetPosition(0, arm_arm);
     arm_base_joint_->SetPosition(0, arm_base);
 
+}
 
-    dt = (current_time - last_status_pub_time_).Double();
-    if (dt < status_pub_period_)
+void GzRosSimChassis::arm_callback(const uvs_message::msg::UvEmbArm::SharedPtr msg)
+{
+    if (mutex_arm_.try_lock_for(std::chrono::milliseconds(1)))
     {
-        return;
+        arm_msg_ = *msg;
+        arm_arm_set = arm_msg_.arm_arm * arm_arm_k + arm_arm_b;
+        arm_base_set = arm_msg_.arm_base * arm_base_k + arm_base_b;
+        mutex_arm_.unlock();
     }
-    last_world_update_time_ = current_time;
-
-    // Publish status
-    status_msg_.left_wheel_speed = v_cur - w_cur * wheel_separation_ / 2;
-    status_msg_.right_wheel_speed = v_cur + w_cur * wheel_separation_ / 2;
-    status_msg_.rotation_z = theta_cur;
-    status_msg_.arm_arm_pos = (arm_arm_cur - arm_arm_b) / arm_arm_k;
-    status_msg_.arm_base_pos = (arm_base_cur - arm_base_b) / arm_base_k;
-    status_msg_.voltage = 12.0;
-
-    status_pub_->publish(status_msg_);
-
-    gui_msg.name = model_->GetName();
-    gui_msg.pose.x = pose.Pos().X();
-    gui_msg.pose.y = pose.Pos().Y();
-    gui_msg.pose.theta = pose.Rot().Yaw();
-    gui_msg.v = v_cur;
-    gui_msg.w = w_cur;
-
-    // Update kinetics target
+}
+void GzRosSimChassis::emag_callback(const uvs_message::msg::UvEmbEmag::SharedPtr msg)
+{
+    if (mutex_emag_.try_lock_for(std::chrono::milliseconds(1)))
+    {
+        emag_msg_ = *msg;
+        emag_flag = emag_msg_.enable;
+        mutex_emag_.unlock();
+        if (timer_collision_ != nullptr)
+        {
+            timer_collision_->reset();
+        }
+        timer_collision_ = ros_node_->create_wall_timer(std::chrono::milliseconds(10), 
+                                                    std::bind(&GzRosSimChassis::timer_collision_callback, this),
+                                                    callback_group_timer_collision_);
+    }
+}
+void GzRosSimChassis::kinetics_callback(const uvs_message::msg::UvEmbKinetics::SharedPtr msg)
+{
     if (mutex_kinetics_.try_lock_for(std::chrono::milliseconds(1)))
     {
+        kinetics_msg_ = *msg;
         v_set = kinetics_msg_.v;
         w_set = kinetics_msg_.w;
-        mutex_kinetics_.unlock();
-
         if (v_set > limit_velocity_)
         {
             v_set = limit_velocity_;
@@ -216,76 +223,82 @@ void GzRosSimChassis::OnUpdate(const gazebo::common::UpdateInfo &_info)
         {
             w_set = -limit_anglevelocity_;
         }
+        mutex_kinetics_.unlock();
     }
+}
 
-    /// Update arm target
-    if (mutex_arm_.try_lock_for(std::chrono::milliseconds(1)))
+void GzRosSimChassis::timer_callback()
+{
+    status_msg_.left_wheel_speed = v_cur - w_cur * wheel_separation_ / 2;
+    status_msg_.right_wheel_speed = v_cur + w_cur * wheel_separation_ / 2;
+    status_msg_.rotation_z = theta_cur;
+    status_msg_.arm_arm_pos = (arm_arm_cur - arm_arm_b) / arm_arm_k;
+    status_msg_.arm_base_pos = (arm_base_cur - arm_base_b) / arm_base_k;
+    status_msg_.voltage = 12.0;
+
+    status_pub_->publish(status_msg_);
+
+    gui_msg.name = model_->GetName();
+    gui_msg.pose.x = pose.Pos().X();
+    gui_msg.pose.y = pose.Pos().Y();
+    gui_msg.pose.theta = pose.Rot().Yaw();
+    gui_msg.v = v_cur;
+    gui_msg.w = w_cur;
+    gui_msg.arm_arm_rad = arm_arm_cur;
+    gui_msg.arm_base_rad = arm_base_cur;
+    gui_msg.emag_status = emag_flag;
+    gui_pub_->publish(gui_msg);
+}
+
+void GzRosSimChassis::timer_collision_callback()
+{
+    if (emag_flag)
     {
-        arm_arm_set = arm_msg_.arm_arm * arm_arm_k + arm_arm_b;
-        arm_base_set = arm_msg_.arm_base * arm_base_k + arm_base_b;
-        mutex_arm_.unlock();
-
-        // arm_base_joint_->SetPosition(0, 3);
-        // arm_arm_joint_ ->SetPosition(0, 1);
-        // arm_arm_joint_->SetPosition(0, arm_arm * arm_arm_k + arm_arm_b);
-        // arm_base_joint_->SetPosition(0, arm_base * arm_base_k + arm_base_b);
-        gui_msg.arm_arm_rad = arm_arm_cur;
-        gui_msg.arm_base_rad = arm_base_cur;
-    }
-
-    /// TODO: Update emag
-    if (mutex_emag_.try_lock_for(std::chrono::milliseconds(1)))
-    {
-        emag_flag = emag_msg_.enable;
-        gui_msg.emag_status = emag_flag;
-        mutex_emag_.unlock();
-        if (emag_flag)
+        if (union_model_ == nullptr)
         {
-            if (union_model_ == nullptr)
+            auto emag_link = model_->GetLink(emag_link_name_);
+            auto emag_collision_name = emag_link->GetCollisions()[0]->GetScopedName();
+            mutex_contacts_.lock();
+            for (int i = 0; i < contacts_msg_.contact_size(); i++)
             {
-                auto emag_link = model_->GetLink(emag_link_name_);
-                auto emag_collision_name = emag_link->GetCollisions()[0]->GetScopedName();
-                mutex_contacts_.lock();
-                for (int i = 0; i < contacts_msg_.contact_size(); i++)
+                auto contact = contacts_msg_.contact(i);
+                if (!(contact.has_collision1() && contact.has_collision2())) continue;
+                if (contact.collision1() == emag_collision_name || contact.collision2() == emag_collision_name)
                 {
-                    auto contact = contacts_msg_.contact(i);
-                    if (!(contact.has_collision1() && contact.has_collision2())) continue;
-                    if (contact.collision1() == emag_collision_name || contact.collision2() == emag_collision_name)
+                    for (auto model : dynamic_models_)
                     {
-                        for (auto model : dynamic_models_)
+                        auto model_link = model->GetLink("link_0");
+                        if (model_link == nullptr)
                         {
-                            auto model_link = model->GetLink("link_0");
-                            if (model_link == nullptr)
-                            {
-                                continue;
-                            }
-                            auto model_collision_name = model_link->GetCollisions()[0]->GetScopedName();
-                            if (contact.collision1() == model_collision_name || contact.collision2() == model_collision_name)
-                            {
-                                union_model_ = model;
-                                union_model_->CreateJoint("emag_joint", "fixed", emag_link, model_link);
-                                break;
-                            }
+                            continue;
                         }
-                        if (union_model_ != nullptr)
+                        auto model_collision_name = model_link->GetCollisions()[0]->GetScopedName();
+                        if (contact.collision1() == model_collision_name || contact.collision2() == model_collision_name)
                         {
+                            union_model_ = model;
+                            union_model_->CreateJoint("emag_joint", "fixed", emag_link, model_link);
+                            timer_collision_->cancel();
                             break;
                         }
                     }
+                    if (union_model_ != nullptr)
+                    {
+                        break;
+                    }
                 }
-                mutex_contacts_.unlock();
             }
-        }
-        else
-        {
-            if (union_model_!=nullptr)
-            {
-                union_model_->RemoveJoint("emag_joint");
-                union_model_ = nullptr;
-            }
+            mutex_contacts_.unlock();
         }
     }
-    gui_pub_->publish(gui_msg);
+    else
+    {
+        if (union_model_!=nullptr)
+        {
+            union_model_->RemoveJoint("emag_joint");
+            union_model_ = nullptr;
+        }
+        timer_collision_->cancel();
+    }
 }
 
 void GzRosSimChassis::gz_contacts_callback(ConstContactsPtr &msg)
