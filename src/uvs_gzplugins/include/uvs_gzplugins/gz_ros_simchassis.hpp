@@ -26,6 +26,8 @@
 #include <ignition/common/Profiler.hh>
 #endif
 
+#include <gazebo/transport/transport.hh>
+
 
 namespace gazebo_plugins
 {
@@ -132,6 +134,7 @@ protected:
             mutex_kinetics_.unlock();
         }
     }
+    void gz_contacts_callback(ConstContactsPtr & msg);
 private:
     gazebo_ros::Node::SharedPtr ros_node_;
     gazebo::physics::ModelPtr model_;
@@ -173,9 +176,12 @@ private:
     std::string emag_link_name_;
 
     gazebo::common::Time last_world_update_time_;
+    gazebo::common::Time last_status_pub_time_;
 
-    PIDController ctrl_v_;
-    PIDController ctrl_w_;
+    gazebo::transport::NodePtr gznode_;
+    gazebo::transport::SubscriberPtr gzsub_;
+    std::timed_mutex mutex_contacts_;
+    gazebo::msgs::Contacts contacts_msg_;
 };
 }   // namespace gazebo_plugins
 
